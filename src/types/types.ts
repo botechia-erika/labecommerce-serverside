@@ -1,3 +1,4 @@
+import { db } from "../models/knex"
 
 export type TPerson = {
     id: string,
@@ -65,8 +66,26 @@ const Title = {
 type ADM = {
     name: "ERIKA-BOTECHIA",
     product: 8,
-    key: "AUTHORIZHATION",
-    AUTHORIZATHION: "CONWAY-ERIKA-BOTECHIA" | "COWAY-BOTECHIA-ERIKA",
+    key: "AUTORIZATION",
+    AUTHORIZATHION: "CONWAY-ERIKA-BOTECHIA",
     LABENUMERO: "22124748",
     LABEMAIL: "BOTECHIAERI@GMAIL.COM" | "MENDONCABOTECHIA@PROTON.ME"
 }
+
+
+
+
+const purchaseDBNumber = () => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const dbFunciona = db;
+        const lastPg = await dbFunciona.raw(`SELECT id FROM purchases ORDER BY DESC LIMIT 1`);
+        
+        console.log(newPurchaseId)
+      } catch (err) {
+        reject(err)
+      }
+    })
+  }
+
+  // await dbFunciona("users").where({ id: `${buyerId}` });

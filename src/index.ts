@@ -16,214 +16,7 @@ app.use(express.json())
 
 
 
-app.get("/tasks", async (req: Request, res: Response) => {
-
-    try {
-        const result = await db.select(`*`).from(`tasks`)
-        res.status(200).send({ tasks: result, message: 'tasks atualizadas' });
-
-    } catch (error) {
-        console.log(error)
-
-        if (req.statusCode === 200) {
-            res.status(500)
-        }
-
-        if (error instanceof Error) {
-            res.send(error.message)
-        } else {
-            res.send("Erro inesperado")
-        }
-    }
-});
-app.get("/products", async (req: Request, res: Response) => {
-    try {
-       
-  
-        const products = await db.select(`*`).from(`products`)
-        res.status(200).send({ products, message: 'lista de produtos atualizadas' });
-  
-    } catch (error) {
-        console.log(error)
-
-        if (req.statusCode === 200) {
-            res.status(500)
-        }
-
-        if (error instanceof Error) {
-            res.send(error.message)
-        } else {
-            res.send("Erro inesperado")
-        }
-    }
-});
-/* SEARCH TASKS*/
-
-
-app.get("/tasks/search", async (req: Request, res: Response) => {
-
-    try {
-        const q = req.query.q
-        const [tasks] = await db("tasks").where({ id: q })
-        res.status(200).send({ tasks })
-    }
-    catch (error) {
-        console.log(error)
-
-        if (req.statusCode === 200) {
-            res.status(500)
-        }
-
-        if (error instanceof Error) {
-            res.send(error.message)
-        } else {
-            res.send("Erro inesperado")
-        }
-    }
-})
-
-
-/******************************************CREATE TASKS***********************************************/
-app.post("/tasks/create", async (req: Request, res: Response) => {
-
-    try {
-        const id = req.body.id
-        const title = req.body.title
-        const description = req.body.description
-        const status = req.body.status
-
-        if (typeof id !== typeof "string") {
-            res.status(400).send({ message: 'id invalido' })
-        }
-
-        if (typeof title != "string") {
-            res.status(400).send({ message: 'title deve ser ser descricao alfa numerica iniciada com letras' })
-        }
-        if (typeof description != "string") {
-            res.status(400).send('description deve ser ser descricao alfa numerica iniciada com letras')
-        }
-
-
-        const newTask: { id: string, title: string, description: string, status: number } = {
-            id,
-            title,
-            description,
-            status
-        }
-        await db("tasks").insert(newTask)
-        res.status(200).send("new task adicionada com sucesso")
-    } catch (error) {
-        console.log(error)
-
-        if (req.statusCode === 200) {
-            res.status(500)
-        }
-
-        if (error instanceof Error) {
-            res.send(error.message)
-        } else {
-            res.send("Erro inesperado")
-        }
-    }
-})
-/*************************TASKS DELETE *************************/
-
-app.delete("/tasks/:id", async (req: Request, res: Response) => {
-
-    try {
-        const idTaskDelete = req.params.id
-
-        const [tasks] = await db("tasks").where({ id: idTaskDelete })
-        if (!tasks) {
-            throw new Error("usuario  nao encontrado")
-        }
-        await db("tasks").delete().where({ id: idTaskDelete })
-        res.status(200).send({ message: 'tasks deletado com sucesso' })
-    }
-    catch (error) {
-        console.log(error)
-
-        if (req.statusCode === 200) {
-            res.status(500)
-        }
-
-        if (error instanceof Error) {
-            res.send(error.message)
-        } else {
-            res.send("Erro inesperado")
-        }
-    }
-})
-
-
-/***********************************EDIT TASKS *************************************************/
-
-app.put("/tasks/:id", async (req: Request, res: Response) => {
-    try {
-        const id = req.params.id
-        const newid = req.body.id as string | undefined
-        const newTitle = req.body.title as string | undefined
-        const newDescription = req.body.description as string | undefined
-        const newStatus = req.body.status as number | undefined
-
-
-        if (newid !== undefined) {
-            if (typeof newid !== "string") {
-                res.status(400)
-                throw new Error("email deve ser tipo string")
-            }
-        }
-
-
-        if (newTitle !== undefined) {
-            if (typeof newTitle !== "string") {
-                res.status(400)
-                throw new Error("email deve ser tipo string")
-            }
-        }
-
-        if (newDescription !== undefined) {
-            if (typeof newDescription !== "string") {
-                res.status(400)
-                throw new Error("password deve ser tipo string")
-            }
-        }
-
-        if (!newStatus) {
-            {
-                res.status(400)
-                throw new Error("DESCRIÇÃO deve ser ALFA NUMERICO E COMECAR COM LETRAS")
-            }
-        }
-
-
-
-
-
-
-        const [taskToEdit2] = await db.raw(` SELECT * FROM tasks where id ={id}`)
-        if (taskToEdit2) {
-            taskToEdit2.id = id || taskToEdit2.id
-            taskToEdit2.title = newTitle || taskToEdit2.title
-            taskToEdit2.description = newDescription || taskToEdit2.description
-            taskToEdit2.status = newStatus || taskToEdit2.status
-            await [taskToEdit2]
-        }
-        res.status(301).send("tasks editado")
-    } catch (error) {
-        console.log(error)
-
-        if (req.statusCode === 200) {
-            res.status(500)
-        }
-
-        if (error instanceof Error) {
-            res.send(error.message)
-        } else {
-            res.send("Erro inesperado")
-        }
-    }
-})
+//endpoints para users 
 
 app.get("/users/:id", async (req: Request, res: Response) => {
     const id = req.params.id
@@ -371,7 +164,29 @@ app.delete("/users/:id", async (req: Request, res: Response) => {
     }
 })
 
+// enpoints para products
+/* 
+app.get("/products", async (req: Request, res: Response) => {
+    try {
+       
+  
+        const products = await db.select(`*`).from(`products`)
+        res.status(200).send({ products, message: 'lista de produtos atualizadas' });
+  
+    } catch (error) {
+        console.log(error)
 
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send("Erro inesperado")
+        }
+    }
+});*/
 app.put("/products/:id", async (req: Request, res: Response) => {
     try {
         const newid = req.params.id;
@@ -475,6 +290,45 @@ app.post("/products/create", async (req: Request, res: Response) => {
         }
     }
 })
+
+// endpoints para purchases
+
+app.get("/products", async (req: Request, res: Response) => {
+    try {
+       const searchTerm = req.query.q as string | undefined
+        if(searchTerm === undefined){
+        const message = "LISTA DE PRODUTOS CADASTRADO DO SISTEMA"
+        const result = await db("products")
+        res.status(200).send({message, result})
+    }else{
+    
+       const [result] =await db("products").where("name", "LIKE" , `%${searchTerm}%`)
+        if(![result]|| result == null){
+            res.send("PRODUTO NÃO CADASTRADO")     
+        }else{
+        res.status(200).send({result : [result], message: "PRODUTO ENCONTRADO"})
+    }
+}}
+    catch (error) {
+        console.log(error)
+
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send("Erro inesperado")
+        }
+    }
+});
+
+
+
+
+
+
 app.listen(3036, () => {
     console.log(`Servidor rodando na porta 3036s `)
 });
