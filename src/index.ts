@@ -326,7 +326,13 @@ app.get("/products", async (req: Request, res: Response) => {
 
 
 
-
+/*        {
+            "id": "PG001",
+            "product_id": "P001",
+            "quantity": 1,
+            "total_price": 7,
+            "buyer_id": "u001"
+        } */
 
 
 app.listen(3036, () => {
