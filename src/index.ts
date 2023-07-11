@@ -3,7 +3,7 @@ import express from 'express'
 import { Request, Response } from 'express';
 import cors from 'cors';
 import { db } from './models/knex'
-
+import path from 'path';
 import { ACCOUNT, CATEGORY, TProductDB } from './types/types';
 
 
@@ -13,10 +13,18 @@ const PORT = 3036
 const port = process.env.PORT
 app.use(cors())
 app.use(express.json())
-
+app.use(express.static(path.resolve(__dirname + '..'+'/public/')))
 
 
 //endpoints para users 
+
+
+
+app.get('/', async (req: Request, res: Response) => {
+ res.json('HELLO WORD')
+ console.log('hello word')
+ res.render('/')
+})
 
 app.get("/users/:id", async (req: Request, res: Response) => {
     const id = req.params.id

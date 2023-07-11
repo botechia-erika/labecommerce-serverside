@@ -74,7 +74,7 @@ type ADM = {
 
 
 
-
+/*
 const purchaseDBNumber = () => {
     return new Promise(async (resolve, reject) => {
       try {
@@ -88,4 +88,4 @@ const purchaseDBNumber = () => {
     })
   }
 
-  // await dbFunciona("users").where({ id: `${buyerId}` });
+  // await dbFunciona("users").where({ id: `${buyerId}` });*/

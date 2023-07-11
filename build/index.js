@@ -15,11 +15,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const knex_1 = require("./models/knex");
+const path_1 = __importDefault(require("path"));
 const app = (0, express_1.default)();
 const PORT = 3036;
 const port = process.env.PORT;
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
+app.use(express_1.default.static(path_1.default.resolve(__dirname + '..' + '/public/')));
+app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.json('HELLO WORD');
+    console.log('hello word');
+    res.render('/');
+}));
 app.get("/users/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     try {

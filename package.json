@@ -12,7 +12,7 @@
     "dev": "ts-node-dev ./src/index.ts",
     "argumento": "node node-package-json/processArgv.js",
     "serve": "nodemon ./server/index.js",
-    "america": " start ./node-package-json-template/pratica1.js"
+    "america": "start node-package-json-template node"
   },
   "keywords": [
     "to-do-list"

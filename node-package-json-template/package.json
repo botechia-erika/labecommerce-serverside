@@ -1,12 +1,19 @@
 {
   "name": "package-json-template",
   "version": "1.0.0",
-  "description": "",
+  "description": "aula 1",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "node": "node pratica1.js Brazil"
   },
-  "author": "",
-  "license": "ISC"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/botechia-erika/labecommerce-serverside.git",
+    "directory": "https://github.com/botechia-erika/labecommerce-serverside/node-package-json-template"
+  },
+  "keywords": [],
+  "author": "botechia-erika <mendoncabotechia@proton.me",
+  "license": "MIT"
 }
