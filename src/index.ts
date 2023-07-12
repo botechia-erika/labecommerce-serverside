@@ -164,29 +164,7 @@ app.delete("/users/:id", async (req: Request, res: Response) => {
     }
 })
 
-// enpoints para products
-/* 
-app.get("/products", async (req: Request, res: Response) => {
-    try {
-       
-  
-        const products = await db.select(`*`).from(`products`)
-        res.status(200).send({ products, message: 'lista de produtos atualizadas' });
-  
-    } catch (error) {
-        console.log(error)
 
-        if (req.statusCode === 200) {
-            res.status(500)
-        }
-
-        if (error instanceof Error) {
-            res.send(error.message)
-        } else {
-            res.send("Erro inesperado")
-        }
-    }
-});*/
 app.put("/products/:id", async (req: Request, res: Response) => {
     try {
         const newid = req.params.id;
@@ -353,7 +331,32 @@ app.get("/products/:id", async (req: Request, res: Response) => {
 }
 )
 
+// enpoints para purchases
+app.get("/purchases/:id", async (req: Request, res: Response) => {
+    const idSearched = req.params.id as string | undefined
+    try {
+        if(idSearched=== undefined){
+            res.status(200).send("É NECESSARIO INFORMAR ID DE PAGAMENTO")
+        }
+        else{
+         const result = await db.select(`*`).from(`purchases`).where("id" , "LIKE", `${idSearched}`)
+        res.status(200).send({ purchase: result, message: 'compra encontrada' });
+        }
 
+    } catch (error) {
+        console.log(error)
+
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send("Erro inesperado")
+        }
+    }
+});
 
 /*        {
             "id": "PG001",

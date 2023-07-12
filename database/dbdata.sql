@@ -1,4 +1,4 @@
--- Active: 1689013411623@@127.0.0.1@3306
+-- Active: 1689172805410@@127.0.0.1@3306
 
 
 
@@ -115,7 +115,7 @@ INSERT INTO
         buyer_id
     )
 VALUES ("PG001", "P001", 1, 7, "u001"), ("PG002", "P002", 1, 8, "u002"), ("PG003", "P003", 1, 7, "u003");
-SELECT * FROM products_purchases;
+SELECT * FROM purchases;
 
 SELECT * FROM products_purchases;
 
@@ -132,5 +132,5 @@ FROM purchases
 
 SELECT * FROM products_purchases;
 
-
+DROP TABLE users_tasks ;
 
