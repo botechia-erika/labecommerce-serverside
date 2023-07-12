@@ -89,3 +89,10 @@ type ADM = {
   }*/
 
   // await dbFunciona("users").where({ id: `${buyerId}` });
+
+  export type TCarro ={
+    marca: string
+    modelo: string
+    ano: number
+  }
+    

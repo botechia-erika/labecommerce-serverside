@@ -10,9 +10,9 @@ const SELECTIONS = [
         beats: "pedra"
     },
     {
-        name: "pedra",
+        name: "tesoura",
         emoji: "✌️",
-        beats: "tesoura"
+        beats: "papel"
     }
 ];
 

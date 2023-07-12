@@ -14,12 +14,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
+const path_1 = __importDefault(require("path"));
 const knex_1 = require("./models/knex");
 const app = (0, express_1.default)();
 const PORT = 3036;
 const port = process.env.PORT;
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
+app.use(express_1.default.static(path_1.default.resolve(__dirname, "..", "/public/")));
 app.get("/users/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     try {
@@ -243,7 +245,7 @@ app.get("/products", (req, res) => __awaiter(void 0, void 0, void 0, function* (
         if (searchTerm === undefined) {
             const message = "LISTA DE PRODUTOS CADASTRADO DO SISTEMA";
             const result = yield (0, knex_1.db)("products");
-            res.status(200).send({ message, result });
+            res.status(200).send({ result });
         }
         else {
             const [result] = yield (0, knex_1.db)("products").where("name", "LIKE", `%${searchTerm}%`);
@@ -253,6 +255,54 @@ app.get("/products", (req, res) => __awaiter(void 0, void 0, void 0, function* (
             else {
                 res.status(200).send({ result: [result], message: "PRODUTO ENCONTRADO" });
             }
+        }
+    }
+    catch (error) {
+        console.log(error);
+        if (req.statusCode === 200) {
+            res.status(500);
+        }
+        if (error instanceof Error) {
+            res.send(error.message);
+        }
+        else {
+            res.send("Erro inesperado");
+        }
+    }
+}));
+app.get("/products/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.params.id;
+    try {
+        const [result] = yield knex_1.db.raw(`SELECT * FROM products WHERE id="${id}"`);
+        if (!result) {
+            res.status(200).send("produto  não encontrado");
+        }
+        else {
+            res.status(200).send({ product: result });
+        }
+    }
+    catch (error) {
+        console.log(error);
+        if (req.statusCode === 200) {
+            res.status(500);
+        }
+        if (error instanceof Error) {
+            res.send(error.message);
+        }
+        else {
+            res.send("Erro inesperado");
+        }
+    }
+}));
+app.get("/purchases/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const idSearched = req.params.id;
+    try {
+        if (idSearched === undefined) {
+            res.status(200).send("É NECESSARIO INFORMAR ID DE PAGAMENTO");
+        }
+        else {
+            const result = yield knex_1.db.select(`*`).from(`purchases`).where("id", "LIKE", `${idSearched}`);
+            res.status(200).send({ purchase: result });
         }
     }
     catch (error) {

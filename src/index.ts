@@ -1,7 +1,8 @@
-
+import { buscaCompra } from './business/buscaCompra';
 import express from 'express'
 import { Request, Response } from 'express';
 import cors from 'cors';
+import path from 'path';
 import { db } from './models/knex'
 
 import { ACCOUNT, CATEGORY, TProductDB } from './types/types';
@@ -13,7 +14,7 @@ const PORT = 3036
 const port = process.env.PORT
 app.use(cors())
 app.use(express.json())
-
+app.use(express.static(path.resolve(__dirname, "..", "/public/")))
 
 
 //endpoints para users 
@@ -277,7 +278,7 @@ app.get("/products", async (req: Request, res: Response) => {
         if(searchTerm === undefined){
         const message = "LISTA DE PRODUTOS CADASTRADO DO SISTEMA"
         const result = await db("products")
-        res.status(200).send({message, result})
+        res.status(200).send({ result})
     }else{
     
        const [result] =await db("products").where("name", "LIKE" , `%${searchTerm}%`)
@@ -340,7 +341,7 @@ app.get("/purchases/:id", async (req: Request, res: Response) => {
         }
         else{
          const result = await db.select(`*`).from(`purchases`).where("id" , "LIKE", `${idSearched}`)
-        res.status(200).send({ purchase: result, message: 'compra encontrada' });
+         res.status(200).send({ purchase: result});
         }
 
     } catch (error) {
@@ -370,3 +371,4 @@ app.get("/purchases/:id", async (req: Request, res: Response) => {
 app.listen(3036, () => {
     console.log(`Servidor rodando na porta 3036s `)
 });
+

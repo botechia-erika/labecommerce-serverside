@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "node": "node ./src/index.js",
-    "start": "clear && node ./index.js",
+    "start": "clear && node ./src/index.js",
     "cinco": "tsc && node ./build/index.js",
     "bananinha": "tsc && node ./Labenu/bananinha.js",
     "build": "tsc",
