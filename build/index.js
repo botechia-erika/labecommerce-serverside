@@ -14,181 +14,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
+const path_1 = __importDefault(require("path"));
 const knex_1 = require("./models/knex");
 const app = (0, express_1.default)();
 const PORT = 3036;
 const port = process.env.PORT;
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
-app.get("/tasks", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const result = yield knex_1.db.select(`*`).from(`tasks`);
-        res.status(200).send({ tasks: result, message: 'tasks atualizadas' });
-    }
-    catch (error) {
-        console.log(error);
-        if (req.statusCode === 200) {
-            res.status(500);
-        }
-        if (error instanceof Error) {
-            res.send(error.message);
-        }
-        else {
-            res.send("Erro inesperado");
-        }
-    }
-}));
-app.get("/products", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const products = yield knex_1.db.select(`*`).from(`products`);
-        res.status(200).send({ products, message: 'lista de produtos atualizadas' });
-    }
-    catch (error) {
-        console.log(error);
-        if (req.statusCode === 200) {
-            res.status(500);
-        }
-        if (error instanceof Error) {
-            res.send(error.message);
-        }
-        else {
-            res.send("Erro inesperado");
-        }
-    }
-}));
-app.get("/tasks/search", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const q = req.query.q;
-        const [tasks] = yield (0, knex_1.db)("tasks").where({ id: q });
-        res.status(200).send({ tasks });
-    }
-    catch (error) {
-        console.log(error);
-        if (req.statusCode === 200) {
-            res.status(500);
-        }
-        if (error instanceof Error) {
-            res.send(error.message);
-        }
-        else {
-            res.send("Erro inesperado");
-        }
-    }
-}));
-app.post("/tasks/create", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const id = req.body.id;
-        const title = req.body.title;
-        const description = req.body.description;
-        const status = req.body.status;
-        if (typeof id !== typeof "string") {
-            res.status(400).send({ message: 'id invalido' });
-        }
-        if (typeof title != "string") {
-            res.status(400).send({ message: 'title deve ser ser descricao alfa numerica iniciada com letras' });
-        }
-        if (typeof description != "string") {
-            res.status(400).send('description deve ser ser descricao alfa numerica iniciada com letras');
-        }
-        const newTask = {
-            id,
-            title,
-            description,
-            status
-        };
-        yield (0, knex_1.db)("tasks").insert(newTask);
-        res.status(200).send("new task adicionada com sucesso");
-    }
-    catch (error) {
-        console.log(error);
-        if (req.statusCode === 200) {
-            res.status(500);
-        }
-        if (error instanceof Error) {
-            res.send(error.message);
-        }
-        else {
-            res.send("Erro inesperado");
-        }
-    }
-}));
-app.delete("/tasks/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const idTaskDelete = req.params.id;
-        const [tasks] = yield (0, knex_1.db)("tasks").where({ id: idTaskDelete });
-        if (!tasks) {
-            throw new Error("usuario  nao encontrado");
-        }
-        yield (0, knex_1.db)("tasks").delete().where({ id: idTaskDelete });
-        res.status(200).send({ message: 'tasks deletado com sucesso' });
-    }
-    catch (error) {
-        console.log(error);
-        if (req.statusCode === 200) {
-            res.status(500);
-        }
-        if (error instanceof Error) {
-            res.send(error.message);
-        }
-        else {
-            res.send("Erro inesperado");
-        }
-    }
-}));
-app.put("/tasks/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const id = req.params.id;
-        const newid = req.body.id;
-        const newTitle = req.body.title;
-        const newDescription = req.body.description;
-        const newStatus = req.body.status;
-        if (newid !== undefined) {
-            if (typeof newid !== "string") {
-                res.status(400);
-                throw new Error("email deve ser tipo string");
-            }
-        }
-        if (newTitle !== undefined) {
-            if (typeof newTitle !== "string") {
-                res.status(400);
-                throw new Error("email deve ser tipo string");
-            }
-        }
-        if (newDescription !== undefined) {
-            if (typeof newDescription !== "string") {
-                res.status(400);
-                throw new Error("password deve ser tipo string");
-            }
-        }
-        if (!newStatus) {
-            {
-                res.status(400);
-                throw new Error("DESCRIÇÃO deve ser ALFA NUMERICO E COMECAR COM LETRAS");
-            }
-        }
-        const [taskToEdit2] = yield knex_1.db.raw(` SELECT * FROM tasks where id ={id}`);
-        if (taskToEdit2) {
-            taskToEdit2.id = id || taskToEdit2.id;
-            taskToEdit2.title = newTitle || taskToEdit2.title;
-            taskToEdit2.description = newDescription || taskToEdit2.description;
-            taskToEdit2.status = newStatus || taskToEdit2.status;
-            yield [taskToEdit2];
-        }
-        res.status(301).send("tasks editado");
-    }
-    catch (error) {
-        console.log(error);
-        if (req.statusCode === 200) {
-            res.status(500);
-        }
-        if (error instanceof Error) {
-            res.send(error.message);
-        }
-        else {
-            res.send("Erro inesperado");
-        }
-    }
-}));
+app.use(express_1.default.static(path_1.default.resolve(__dirname, "..", "/public/")));
 app.get("/users/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     try {
@@ -392,6 +225,85 @@ app.post("/products/create", (req, res) => __awaiter(void 0, void 0, void 0, fun
         };
         yield (0, knex_1.db)("products").insert(newAccount);
         res.status(201).send("produto cadastrado com sucesso");
+    }
+    catch (error) {
+        console.log(error);
+        if (req.statusCode === 200) {
+            res.status(500);
+        }
+        if (error instanceof Error) {
+            res.send(error.message);
+        }
+        else {
+            res.send("Erro inesperado");
+        }
+    }
+}));
+app.get("/products", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const searchTerm = req.query.q;
+        if (searchTerm === undefined) {
+            const message = "LISTA DE PRODUTOS CADASTRADO DO SISTEMA";
+            const result = yield (0, knex_1.db)("products");
+            res.status(200).send({ result });
+        }
+        else {
+            const [result] = yield (0, knex_1.db)("products").where("name", "LIKE", `%${searchTerm}%`);
+            if (![result] || result == null) {
+                res.send("PRODUTO NÃO CADASTRADO");
+            }
+            else {
+                res.status(200).send({ result: [result], message: "PRODUTO ENCONTRADO" });
+            }
+        }
+    }
+    catch (error) {
+        console.log(error);
+        if (req.statusCode === 200) {
+            res.status(500);
+        }
+        if (error instanceof Error) {
+            res.send(error.message);
+        }
+        else {
+            res.send("Erro inesperado");
+        }
+    }
+}));
+app.get("/products/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.params.id;
+    try {
+        const [result] = yield knex_1.db.raw(`SELECT * FROM products WHERE id="${id}"`);
+        if (!result) {
+            res.status(200).send("produto  não encontrado");
+        }
+        else {
+            res.status(200).send({ product: result });
+        }
+    }
+    catch (error) {
+        console.log(error);
+        if (req.statusCode === 200) {
+            res.status(500);
+        }
+        if (error instanceof Error) {
+            res.send(error.message);
+        }
+        else {
+            res.send("Erro inesperado");
+        }
+    }
+}));
+app.get("/purchases/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const idSearched = req.params.id;
+    try {
+        if (idSearched === undefined) {
+            res.status(200).send("É NECESSARIO INFORMAR ID DE PAGAMENTO");
+        }
+        else {
+            const result = yield knex_1.db.select(`*`).from(`purchases`).where("id", "LIKE", `${idSearched}`);
+            res.status(200).send({ purchase: result });
+        }
     }
     catch (error) {
         console.log(error);

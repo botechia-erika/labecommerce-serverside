@@ -1,4 +1,6 @@
--- Active: 1689000533789@@127.0.0.1@3306
+-- Active: 1689172805410@@127.0.0.1@3306
+
+
 
 CREATE TABLE
     users (
@@ -7,7 +9,6 @@ CREATE TABLE
         nickname TEXT NOT NULL UNIQUE,
         email TEXT NOT NULL UNIQUE,
         password TEXT NOT NULL,
-        role text not null DEFAULT "NORMAL",
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
@@ -19,30 +20,26 @@ INSERT INTO
         name,
         nickname,
         email,
-        password,
-        role
+        password
     )
 VALUES (
         "f001",
         "FULANO",
         "fulano-bastos",
         "fulano@email.com",
-        "jzD_yyEcp0M",
-        "BUYER"
+        "jzD_yyEcp0M"
     ), (
         "f002",
         "BELTRANO",
         "beltrano-silva",
         "beltranosilva@email.com",
-        "m4PlFzASXUc",
-        "NORMAL"
+        "m4PlFzASXUc"
     ), (
         "f003",
         "ERIKA LUISA MENDONCA BOTECHIA DE JESUS LEITE",
         "erika-botechia",
         "botechiaeri@gmail.com",
-        "Conway22124748",
-        "ADM"
+        "Conway22124748"
     );
 
 SELECT * FROM users WHERE name LIKE '%BELTRANO%';
@@ -55,75 +52,7 @@ SELECT * FROM users ;
 
 SELECT id , created_at FROM users ORDER BY id DESC;
 
-CREATE TABLE
-    tasks (
-        id TEXT PRIMARY KEY NOT NULL UNIQUE,
-        title TEXT NOT NULL UNIQUE,
-        description TEXT NOT NULL,
-        status BLOB,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
 
-DROP TABLE tasks;
-
-INSERT INTO
-    tasks(id, title, description, status)
-VALUES (
-        "t001",
-        "HEADER COMPONENT",
-        "CRIAR COMPONENTE HEADER DO SITE",
-        0
-    ), (
-        "t002",
-        "FOOTER COMPONENT",
-        "CRIAR COMPONENTE FOOTER DO SITE",
-        0
-    ), (
-        "t003",
-        "TESTING USABILITY",
-        "TESTAR USABILIDADE DE TODO SITE",
-        0
-    ), (
-        "t004",
-        "DEPLOY SURGE",
-        "CRIAR DEPLOY SITE EM SURGE",
-        0
-    );
-
-SELECT * FROM tasks;
-
-CREATE TABLE
-    users_tasks (
-        id_users TEXT NOT NULL,
-        id_task TEXT NOT NULL,
-        FOREIGN KEY (id_users) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
-        FOREIGN KEY (id_task) REFERENCES tasks(id) ON UPDATE CASCADE ON DELETE CASCADE
-    );
-
-SELECT id FROM tasks ORDER BY id DESC;
-
-DROP TABLE users_tasks;
-
-SELECT *
-FROM users
-    LEFT JOIN users_tasks ON users_tasks.id_task = users.id;
-
-SELECT * FROM users_tasks;
-
-INSERT INTO
-    users_tasks(id_users, id_task)
-VALUES ("f001", "t001"), ("f002", "t002"), ("f003", "t003"), ("f001", "t004"), ("f002", "t004");
-
-SELECT
-    users.name,
-    users.email,
-    users.role,
-    tasks.title,
-    tasks.description,
-    tasks.status
-FROM tasks
-    INNER JOIN users_tasks ON tasks.id = users_tasks.id_task
-    INNER JOIN users ON users_tasks.id_users = users.id;
 
 CREATE TABLE
     products(
@@ -186,7 +115,7 @@ INSERT INTO
         buyer_id
     )
 VALUES ("PG001", "P001", 1, 7, "u001"), ("PG002", "P002", 1, 8, "u002"), ("PG003", "P003", 1, 7, "u003");
-SELECT * FROM products_purchases;
+SELECT * FROM purchases;
 
 SELECT * FROM products_purchases;
 
@@ -202,4 +131,6 @@ FROM purchases
     INNER JOIN products ON products_purchases.product_id = products.id;
 
 SELECT * FROM products_purchases;
+
+DROP TABLE users_tasks ;
 
