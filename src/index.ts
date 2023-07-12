@@ -324,6 +324,35 @@ app.get("/products", async (req: Request, res: Response) => {
     }
 });
 
+app.get("/products/:id", async (req: Request, res: Response) => {
+    const id = req.params.id as string | []
+
+    try {
+        const [result] = await db.raw(`SELECT * FROM products WHERE id="${id}"`)
+
+        if (!result) {
+            res.status(200).send("produto  não encontrado")
+        }
+        else {
+
+            res.status(200).send({ product: result })
+        }
+    } catch (error) {
+        console.log(error)
+
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send("Erro inesperado")
+        }
+    }
+}
+)
+
 
 
 /*        {
