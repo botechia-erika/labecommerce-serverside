@@ -1,4 +1,4 @@
--- Active: 1689172805410@@127.0.0.1@3306
+-- Active: 1689275913938@@127.0.0.1@3306
 
 
 
@@ -128,8 +128,8 @@ SELECT
     purchases.buyer_id
 FROM purchases
     INNER JOIN products_purchases ON purchases.id = products_purchases.purchase_id
-    INNER JOIN products ON products_purchases.product_id = products.id;
-
+    INNER JOIN products ON products_purchases.product_id = products.id
+WHERE purchase_id="PG001";
 SELECT * FROM products_purchases;
 
 DROP TABLE users_tasks ;

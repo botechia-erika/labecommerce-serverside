@@ -1,10 +1,10 @@
-import { buscaCompra } from './business/buscaCompra';
+import { TItemPurchased } from './types/types';
 import express from 'express'
 import { Request, Response } from 'express';
 import cors from 'cors';
 import path from 'path';
 import { db } from './models/knex'
-
+import { buscaProducto } from './business/buscaCarro';
 import { ACCOUNT, CATEGORY, TProductDB } from './types/types';
 
 
@@ -53,7 +53,7 @@ app.get("/users/:id", async (req: Request, res: Response) => {
 
 
 
-app.get("/users", async (req: Request, res: Response) => {
+app.get("/users/search", async (req: Request, res: Response) => {
     const q = req.params.q
     try {
         if (q === undefined) {
@@ -340,7 +340,19 @@ app.get("/purchases/:id", async (req: Request, res: Response) => {
             res.status(200).send("É NECESSARIO INFORMAR ID DE PAGAMENTO")
         }
         else{
-         const result = await db.select(`*`).from(`purchases`).where("id" , "LIKE", `${idSearched}`)
+         const result = await db.raw(`
+         SELECT
+        products.name,
+        products.price,
+        purchases.id,
+        purchases.quantity,
+        purchases.total_price,
+        purchases.buyer_id
+        FROM purchases
+        INNER JOIN products_purchases ON purchases.id = products_purchases.purchase_id
+        INNER JOIN products ON products_purchases.product_id = products.id
+        WHERE purchase_id="${idSearched}"`
+        )
          res.status(200).send({ purchase: result});
         }
 
@@ -359,16 +371,25 @@ app.get("/purchases/:id", async (req: Request, res: Response) => {
     }
 });
 
-/*        {
-            "id": "PG001",
-            "product_id": "P001",
-            "quantity": 1,
-            "total_price": 7,
-            "buyer_id": "u001"
-        } */
+app.post("/purchases/create", async (req: Request, res: Response) => {
+
+            try {
+
+                const idItem=req.body.itemCart.id as string ,
+                const quantityItem=req.body.itemCart.quantity as Number,
+                const totalPriceItem=req.body.itemCart.total as Number,
+                
+                const itemCartDB = {
+                    idItem,
+                    quantityItem,
+                    totalPriceItem
+                }
 
 
+     
+
+
+)
 app.listen(3036, () => {
     console.log(`Servidor rodando na porta 3036s `)
 });
-

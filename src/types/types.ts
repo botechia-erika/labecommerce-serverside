@@ -73,7 +73,23 @@ type ADM = {
 }
 
 
+export type TItemPurchased = {
+    id: string,
+    productSearched: void()
+    name:string,
+    description: string, 
+    image_url: string,
+    price : Number  | string,
+    quantity: number,
+}
 
+
+export type TProductsDB = {
+    product_id:string,
+    quantity:number,
+    priceUnity:number,
+    totalItem:number
+}
 
 /*const purchaseDBNumber = () => {
     return new Promise(async (resolve, reject) => {
