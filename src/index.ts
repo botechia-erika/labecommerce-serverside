@@ -370,26 +370,95 @@ app.get("/purchases/:id", async (req: Request, res: Response) => {
         }
     }
 });
-
+/* 
 app.post("/purchases/create", async (req: Request, res: Response) => {
 
             try {
+                let idPayment: undefined | string
+                const id=req.body.itemCart.id as string;
+                const totalPrice=req.body.itemCart.total as Number;
+                const quantityItem = req.body.itemCart.quantity as Number;
+                const buyer = req.body.buyer as string| undefined
+                if(id != typeof "string"){
+                  throw new Error("id deve ser string valida")
+                }
+                      
+                if(typeof totalPrice != typeof Number){
+                    throw new Error("preço total deve ser valor numerico valido")
+                  }
+            
+                        
+                if(typeof quantityItem != typeof Number){
+                    throw new Error("quantidade de items deve ser valor numerico valida")
+                  }
+      
 
-                const idItem=req.body.itemCart.id as string ,
-                const quantityItem=req.body.itemCart.quantity as Number,
-                const totalPriceItem=req.body.itemCart.total as Number,
-                
-                const itemCartDB = {
-                    idItem,
-                    quantityItem,
-                    totalPriceItem
+                if(buyer){
+                  const buyerDB = await db.raw(`SELECT id FROM users WHERE id="${buyer}"`)
+                 if(!buyerDB || buyerDB === undefined){
+                    throw new Error("cliente deve ser cadastrado antes da compra")
+                 }else{
+                    return buyer
+                 }
+                }
+      
+                            
+                if( idPayment === undefined) {
+                    const lastPg =  await db.raw(`SELECT id FROM purchases ORDER BY DESC LIMIT 1`)
+                    const newNro = Number(lastPg.pop(3)) + 1
+                    idPayment = "pgo" + newNro.toString() 
+                      return idPayment
+                }
+
+                const ItemPurchase =[{
+                idPayment,
+                id,
+                quantityItem,
+                totalPrice,
+                buyer
+                }]
+            
+
+                if(ItemPurchase.length === 1){
+                    await db("purchases").insert(ItemPurchase[0])
+                }else{
+                    [...ItemPurchase].forEach(product)=>{
+                            product.filter()
+                        await db.raw(`
+                    INSERT INTO purchases(
+                    id,
+                    product_id,
+                    quantity,
+                    total_price,
+                    buyer_id)
+                    values(
+                        ${['ItemPurchase[0].idPayment']},
+
+
+
+                        
+                        ${['ItemPurchased[0].buyer']}
+                        )
+
+                    `)
                 }
 
 
-     
-
-
-)
+                
+            } catch (error) {
+            console.log(error)
+    
+            if (req.statusCode === 200) {
+                res.status(500)
+            }
+    
+            if (error instanceof Error) {
+                res.send(error.message)
+            } else {
+                res.send("Erro inesperado")
+            }
+        }
+    });*/
 app.listen(3036, () => {
     console.log(`Servidor rodando na porta 3036s `)
 });
