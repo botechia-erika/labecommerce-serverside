@@ -63,11 +63,11 @@ const Title = {
     product: "AULAS",
     value: "LABENU"
 }
-type ADM = {
-    name: "ERIKA-BOTECHIA",
+type ESTUDANTE = {
+    name: "LABENU",
     product: 8,
     key: "AUTORIZATION",
-    AUTHORIZATHION: "CONWAY-ERIKA-BOTECHIA",
+    AUTHORIZATHION: "CONWAY-BOTECHIA-ERIKA",
     LABENUMERO: "22124748",
     LABEMAIL: "BOTECHIAERI@GMAIL.COM" | "MENDONCABOTECHIA@PROTON.ME"
 }
@@ -75,7 +75,7 @@ type ADM = {
 
 export type TItemPurchased = {
     id: string,
-    productSearched: void()
+
     name:string,
     description: string, 
     image_url: string,

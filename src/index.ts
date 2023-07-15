@@ -18,7 +18,25 @@ app.use(express.static(path.resolve(__dirname, "..", "/public/")))
 
 
 //endpoints para users 
+app.get("/users", async (req: Request, res: Response) => {
+   try{
+    const result = await db.raw(`SELECT * FROM users`)
+   res.status(200).send(result)
+    } catch (error) {
+        console.log(error)
 
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send("Erro inesperado")
+        }
+    }
+}
+)
 app.get("/users/:id", async (req: Request, res: Response) => {
     const id = req.params.id
 
@@ -54,18 +72,13 @@ app.get("/users/:id", async (req: Request, res: Response) => {
 
 
 app.get("/users/search", async (req: Request, res: Response) => {
-    const q = req.params.q
-    try {
-        if (q === undefined) {
-
-            const result = await db("users")
-            res.status(200).send({ result })
-
-        }
-
-        else {
-            const result = await db("users").where("name", "LIKES", `%${q}%`)
-            res.status(200).send({ result })
+   try {
+   
+    const search = req.query.q as string | undefined
+     
+        if (search === undefined) {
+            const result ="Indique o nome a ser buscado"
+            res.status(200).send(result)
         }
 
     } catch (error) {
@@ -272,16 +285,16 @@ app.post("/products/create", async (req: Request, res: Response) => {
 
 // endpoints para purchases
 
-app.get("/products", async (req: Request, res: Response) => {
+app.get("/products/search", async (req: Request, res: Response) => {
     try {
-       const searchTerm = req.query.q as string | undefined
-        if(searchTerm === undefined){
+       const search = req.query.q as string | undefined
+        if(search=== undefined){
         const message = "LISTA DE PRODUTOS CADASTRADO DO SISTEMA"
         const result = await db("products")
         res.status(200).send({ result})
     }else{
     
-       const [result] =await db("products").where("name", "LIKE" , `%${searchTerm}%`)
+       const [result] =await db("products").where("name", "LIKE" , `%${search}%`)
         if(![result]|| result == null){
             res.send("PRODUTO NÃO CADASTRADO")     
         }else{
@@ -370,95 +383,66 @@ app.get("/purchases/:id", async (req: Request, res: Response) => {
         }
     }
 });
-/* 
+
 app.post("/purchases/create", async (req: Request, res: Response) => {
 
             try {
-                let idPayment: undefined | string
-                const id=req.body.itemCart.id as string;
-                const totalPrice=req.body.itemCart.total as Number;
-                const quantityItem = req.body.itemCart.quantity as Number;
-                const buyer = req.body.buyer as string| undefined
-                if(id != typeof "string"){
+                let id=req.body.id as v  undefined | string
+                const product_id=req.body.product_id as string;
+                const totalPrice=req.body.totalPrice as number;
+                const quantity = req.body.quantity as number;
+                const buyer_id = req.body.buyer_id as string| undefined
+                if(id != typeof "string" && id !== undefined){
                   throw new Error("id deve ser string valida")
                 }
                       
-                if(typeof totalPrice != typeof Number){
+                if(typeof totalPrice != typeof number){
                     throw new Error("preço total deve ser valor numerico valido")
                   }
             
                         
-                if(typeof quantityItem != typeof Number){
+                if(typeof quantity != typeof number){
                     throw new Error("quantidade de items deve ser valor numerico valida")
                   }
       
 
-                if(buyer){
-                  const buyerDB = await db.raw(`SELECT id FROM users WHERE id="${buyer}"`)
-                 if(!buyerDB || buyerDB === undefined){
-                    throw new Error("cliente deve ser cadastrado antes da compra")
+                if(buyer_id){
+                  const buyerid = await db.raw(`SELECT id  FROM users WHERE id="${buyer_id}"`)
+                 if(buyerDB === {}|| buyerDB === undefined){
+                    throw new Error("cliente não cadastrado")
                  }else{
-                    return buyer
+                     buyer_id = buyerid
+                     return buyer_id
                  }
-                }
-      
-                            
-                if( idPayment === undefined) {
+                }       
+                if( id === undefined) {
                     const lastPg =  await db.raw(`SELECT id FROM purchases ORDER BY DESC LIMIT 1`)
                     const newNro = Number(lastPg.pop(3)) + 1
                     idPayment = "pgo" + newNro.toString() 
-                      return idPayment
-                }
-
-                const ItemPurchase =[{
-                idPayment,
+                    id= idPayment
+                    return id
+                    }
+                const ItemPurchase ={
                 id,
-                quantityItem,
+                product_id,
+                quantity,
                 totalPrice,
-                buyer
-                }]
-            
-
-                if(ItemPurchase.length === 1){
-                    await db("purchases").insert(ItemPurchase[0])
-                }else{
-                    [...ItemPurchase].forEach(product)=>{
-                            product.filter()
-                        await db.raw(`
-                    INSERT INTO purchases(
-                    id,
-                    product_id,
-                    quantity,
-                    total_price,
-                    buyer_id)
-                    values(
-                        ${['ItemPurchase[0].idPayment']},
-
-
-
-                        
-                        ${['ItemPurchased[0].buyer']}
-                        )
-
-                    `)
+                buyer_id
                 }
-
-
-                
+            const newPurchase = await db("purchases").insert(`${ItemPurchase}`)
+                res.status(201).send("Pagamento arquivado com sucesso!")
             } catch (error) {
             console.log(error)
-    
             if (req.statusCode === 200) {
                 res.status(500)
-            }
-    
+            }   
             if (error instanceof Error) {
                 res.send(error.message)
             } else {
                 res.send("Erro inesperado")
             }
         }
-    });*/
+    })
 app.listen(3036, () => {
     console.log(`Servidor rodando na porta 3036s `)
 });
