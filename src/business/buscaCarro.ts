@@ -1,4 +1,4 @@
-import {Frota} from "./../dataTS/frota"
+/*import {Frota} from "./../dataTS/Frota"
 import { TCarro, TProductDB } from "../types/types"
 //frota e array de carros e marca string
 export function buscaProducto(products:TProductDB[], id_product?:string) {
@@ -29,7 +29,7 @@ tornar marca opcional com signo de interrogação
 */
 //console.log('*****FROTA COMPLETA SEM MARCA REFATORA MARCA? ********')
 //console.log(buscarCarrosPorMarca(frota))
-console.log(buscaCarro(Frota, query))
+//console.log(buscaCarro(Frota, query))
 //retorna frota completa
 
 
@@ -41,4 +41,4 @@ console.log(buscaCarro(Frota, query))
 //console.log(buscarCarrosPorMarca(frota,1))
 //console.log(buscarCarrosPorMarca(frota, "Chevrolet"))
 
-export default buscaCarro
+//export default buscaCarro

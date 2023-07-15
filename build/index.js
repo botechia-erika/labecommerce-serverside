@@ -51,14 +51,14 @@ app.get("/users/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 }));
 app.get("/users", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const q = req.params.q;
     try {
+        const q = req.query.q;
         if (q === undefined) {
             const result = yield (0, knex_1.db)("users");
             res.status(200).send({ result });
         }
         else {
-            const result = yield (0, knex_1.db)("users").where("name", "LIKES", `%${q}%`);
+            const result = yield (0, knex_1.db)("users").where("name", "LIKE", `%${q}%`);
             res.status(200).send({ result });
         }
     }
@@ -301,7 +301,18 @@ app.get("/purchases/:id", (req, res) => __awaiter(void 0, void 0, void 0, functi
             res.status(200).send("É NECESSARIO INFORMAR ID DE PAGAMENTO");
         }
         else {
-            const result = yield knex_1.db.select(`*`).from(`purchases`).where("id", "LIKE", `${idSearched}`);
+            const result = yield knex_1.db.raw(`
+         SELECT
+        products.name,
+        products.price,
+        purchases.id,
+        purchases.quantity,
+        purchases.total_price,
+        purchases.buyer_id
+        FROM purchases
+        INNER JOIN products_purchases ON purchases.id = products_purchases.purchase_id
+        INNER JOIN products ON products_purchases.product_id = products.id
+        WHERE purchase_id="${idSearched}"`);
             res.status(200).send({ purchase: result });
         }
     }
