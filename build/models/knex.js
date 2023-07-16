@@ -8,7 +8,7 @@ const knex_1 = __importDefault(require("knex"));
 exports.db = (0, knex_1.default)({
     client: "sqlite3",
     connection: {
-        filename: "database/dbdata.db",
+        filename: "src/database/dbdata.db",
     },
     useNullAsDefault: true,
     pool: {

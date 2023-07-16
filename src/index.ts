@@ -1,10 +1,9 @@
-import { TItemPurchased } from './types/types';
 import express from 'express'
 import { Request, Response } from 'express';
 import cors from 'cors';
 import path from 'path';
 import { db } from './models/knex'
-import { buscaProducto } from './business/buscaCarro';
+
 import { ACCOUNT, CATEGORY, TProductDB } from './types/types';
 
 

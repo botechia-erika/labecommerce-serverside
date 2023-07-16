@@ -1,4 +1,4 @@
-import {TCarro} from './../types/types'
+/*import {TCarro} from './../types/types'
   export const Frota: TCarro[] = [
     {
       marca: 'Chevrolet',
@@ -48,4 +48,4 @@ import {TCarro} from './../types/types'
       marca: 'Toyota',
       modelo: 'Yaris',
       ano: 2019
-    }]
+    }]*/
