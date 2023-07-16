@@ -14,27 +14,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
-const path_1 = __importDefault(require("path"));
 const knex_1 = require("./models/knex");
+const body_parser_1 = __importDefault(require("body-parser"));
 const app = (0, express_1.default)();
 const PORT = 3036;
 const port = process.env.PORT;
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
-app.use(express_1.default.static(path_1.default.resolve(__dirname, "..", "/public/")));
+app.use(body_parser_1.default.json());
 app.get("/users/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     try {
         if (!id || id === "") {
             const result = yield knex_1.db.raw(`SELECT * FROM users`);
-            res.send({ result });
+            res.json({ result });
         }
         else if (id === "" || id === undefined) {
-            res.status(404).send("author não encontrado");
+            res.status(404).json("author não encontrado");
         }
         else {
             const result = yield knex_1.db.raw(`SELECT * FROM users WHERE id="${id}"`);
-            res.status(200).send({ result });
+            res.status(200).json({ result });
         }
     }
     catch (error) {
@@ -43,10 +43,10 @@ app.get("/users/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* 
             res.status(500);
         }
         if (error instanceof Error) {
-            res.send(error.message);
+            res.json(error.message);
         }
         else {
-            res.send("Erro inesperado");
+            res.json("Erro inesperado");
         }
     }
 }));
@@ -55,11 +55,11 @@ app.get("/users/search", (req, res) => __awaiter(void 0, void 0, void 0, functio
     try {
         if (q === undefined) {
             const result = yield (0, knex_1.db)("users");
-            res.status(200).send({ result });
+            res.status(200).json({ result });
         }
         else {
             const result = yield (0, knex_1.db)("users").where("name", "LIKES", `%${q}%`);
-            res.status(200).send({ result });
+            res.status(200).json({ result });
         }
     }
     catch (error) {
@@ -68,10 +68,10 @@ app.get("/users/search", (req, res) => __awaiter(void 0, void 0, void 0, functio
             res.status(500);
         }
         if (error instanceof Error) {
-            res.send(error.message);
+            res.json(error.message);
         }
         else {
-            res.send("Erro inesperado");
+            res.json("Erro inesperado");
         }
     }
 }));
@@ -84,22 +84,22 @@ app.post("/users/create", (req, res) => __awaiter(void 0, void 0, void 0, functi
         const password = req.body.password;
         const role = req.body.role;
         if (typeof id !== typeof "string") {
-            res.status(400).send({ message: 'nome invalido' });
+            res.status(400).json({ message: 'nome invalido' });
         }
         if (typeof name != "string") {
-            res.status(400).send({ message: 'nome invalido' });
+            res.status(400).json({ message: 'nome invalido' });
         }
         if (typeof nickname != "string") {
-            res.status(400).send('nickname alfa-numerico');
+            res.status(400).json('nickname alfa-numerico');
         }
         if (typeof email != "string") {
-            res.status(400).send('nickname alfa-numerico');
+            res.status(400).json('nickname alfa-numerico');
         }
         if (typeof password != "string") {
-            res.status(400).send("outra senha essa é invalida tente alfa-numerico");
+            res.status(400).json("outra senha essa é invalida tente alfa-numerico");
         }
         if (typeof role != "string") {
-            res.status(400).send('nickname alfa-numerico');
+            res.status(400).json('nickname alfa-numerico');
         }
         const newAuthor = {
             id,
@@ -110,7 +110,7 @@ app.post("/users/create", (req, res) => __awaiter(void 0, void 0, void 0, functi
             role
         };
         yield (0, knex_1.db)("users").insert(newAuthor);
-        res.status(200).send("cadastro com sucesso");
+        res.status(200).json("cadastro com sucesso");
     }
     catch (error) {
         console.log(error);
@@ -118,10 +118,10 @@ app.post("/users/create", (req, res) => __awaiter(void 0, void 0, void 0, functi
             res.status(500);
         }
         if (error instanceof Error) {
-            res.send(error.message);
+            res.json(error.message);
         }
         else {
-            res.send("Erro inesperado");
+            res.json("Erro inesperado");
         }
     }
 }));
@@ -133,7 +133,7 @@ app.delete("/users/:id", (req, res) => __awaiter(void 0, void 0, void 0, functio
             throw new Error("usuario  nao encontrado");
         }
         yield (0, knex_1.db)("users").delete().where({ id: idToDelete });
-        res.status(200).send({ message: 'users deletado com sucesso' });
+        res.status(200).json({ message: 'users deletado com sucesso' });
     }
     catch (error) {
         console.log(error);
@@ -141,10 +141,10 @@ app.delete("/users/:id", (req, res) => __awaiter(void 0, void 0, void 0, functio
             res.status(500);
         }
         if (error instanceof Error) {
-            res.send(error.message);
+            res.json(error.message);
         }
         else {
-            res.send("Erro inesperado");
+            res.json("Erro inesperado");
         }
     }
 }));
@@ -182,7 +182,7 @@ app.put("/products/:id", (req, res) => __awaiter(void 0, void 0, void 0, functio
                 product4edit.price = newPrice || product4edit.price;
         }
         yield (0, knex_1.db)("products").update(product4edit).where({ id: `${newid}` });
-        res.status(201).send("produto atualizado com sucesso");
+        res.status(201).json("produto atualizado com sucesso");
     }
     catch (error) {
         console.log(error);
@@ -190,10 +190,10 @@ app.put("/products/:id", (req, res) => __awaiter(void 0, void 0, void 0, functio
             res.status(500);
         }
         if (error instanceof Error) {
-            res.send(error.message);
+            res.json(error.message);
         }
         else {
-            res.send("Erro inesperado");
+            res.json("Erro inesperado");
         }
     }
 }));
@@ -205,16 +205,16 @@ app.post("/products/create", (req, res) => __awaiter(void 0, void 0, void 0, fun
         const image_url = req.body.image_url;
         const price = req.body.price;
         if (typeof name != typeof "string") {
-            res.status(400).send({ message: 'nome do produto é invalido' });
+            res.status(400).json({ message: 'nome do produto é invalido' });
         }
         if (typeof description != typeof "string") {
-            res.status(400).send('description deve ser categoria de produto valida');
+            res.status(400).json('description deve ser categoria de produto valida');
         }
         if (typeof image_url != typeof "string") {
-            res.status(400).send('url da imagem deve ser valida');
+            res.status(400).json('url da imagem deve ser valida');
         }
         if (typeof price == undefined) {
-            res.status(400).send("price deve ser numerico");
+            res.status(400).json("price deve ser numerico");
         }
         const newAccount = {
             id,
@@ -224,7 +224,7 @@ app.post("/products/create", (req, res) => __awaiter(void 0, void 0, void 0, fun
             price
         };
         yield (0, knex_1.db)("products").insert(newAccount);
-        res.status(201).send("produto cadastrado com sucesso");
+        res.status(201).json("produto cadastrado com sucesso");
     }
     catch (error) {
         console.log(error);
@@ -232,10 +232,10 @@ app.post("/products/create", (req, res) => __awaiter(void 0, void 0, void 0, fun
             res.status(500);
         }
         if (error instanceof Error) {
-            res.send(error.message);
+            res.json(error.message);
         }
         else {
-            res.send("Erro inesperado");
+            res.json("Erro inesperado");
         }
     }
 }));
@@ -245,15 +245,15 @@ app.get("/products", (req, res) => __awaiter(void 0, void 0, void 0, function* (
         if (searchTerm === undefined) {
             const message = "LISTA DE PRODUTOS CADASTRADO DO SISTEMA";
             const result = yield (0, knex_1.db)("products");
-            res.status(200).send({ result });
+            res.status(200).json({ result });
         }
         else {
             const [result] = yield (0, knex_1.db)("products").where("name", "LIKE", `%${searchTerm}%`);
             if (![result] || result == null) {
-                res.send("PRODUTO NÃO CADASTRADO");
+                res.json("PRODUTO NÃO CADASTRADO");
             }
             else {
-                res.status(200).send({ result: [result], message: "PRODUTO ENCONTRADO" });
+                res.status(200).json({ result: [result], message: "PRODUTO ENCONTRADO" });
             }
         }
     }
@@ -263,10 +263,10 @@ app.get("/products", (req, res) => __awaiter(void 0, void 0, void 0, function* (
             res.status(500);
         }
         if (error instanceof Error) {
-            res.send(error.message);
+            res.json(error.message);
         }
         else {
-            res.send("Erro inesperado");
+            res.json("Erro inesperado");
         }
     }
 }));
@@ -275,10 +275,10 @@ app.get("/products/:id", (req, res) => __awaiter(void 0, void 0, void 0, functio
     try {
         const [result] = yield knex_1.db.raw(`SELECT * FROM products WHERE id="${id}"`);
         if (!result) {
-            res.status(200).send("produto  não encontrado");
+            res.status(200).json("produto  não encontrado");
         }
         else {
-            res.status(200).send({ product: result });
+            res.status(200).json({ product: result });
         }
     }
     catch (error) {
@@ -287,10 +287,10 @@ app.get("/products/:id", (req, res) => __awaiter(void 0, void 0, void 0, functio
             res.status(500);
         }
         if (error instanceof Error) {
-            res.send(error.message);
+            res.json(error.message);
         }
         else {
-            res.send("Erro inesperado");
+            res.json("Erro inesperado");
         }
     }
 }));
@@ -298,7 +298,7 @@ app.get("/purchases/:id", (req, res) => __awaiter(void 0, void 0, void 0, functi
     const idSearched = req.params.id;
     try {
         if (idSearched === undefined) {
-            res.status(200).send("É NECESSARIO INFORMAR ID DE PAGAMENTO");
+            res.status(200).json("É NECESSARIO INFORMAR ID DE PAGAMENTO");
         }
         else {
             const result = yield knex_1.db.raw(`
@@ -313,7 +313,7 @@ app.get("/purchases/:id", (req, res) => __awaiter(void 0, void 0, void 0, functi
         INNER JOIN products_purchases ON purchases.id = products_purchases.purchase_id
         INNER JOIN products ON products_purchases.product_id = products.id
         WHERE purchase_id="${idSearched}"`);
-            res.status(200).send({ purchase: result });
+            res.status(200).json({ purchase: result });
         }
     }
     catch (error) {
@@ -322,10 +322,10 @@ app.get("/purchases/:id", (req, res) => __awaiter(void 0, void 0, void 0, functi
             res.status(500);
         }
         if (error instanceof Error) {
-            res.send(error.message);
+            res.json(error.message);
         }
         else {
-            res.send("Erro inesperado");
+            res.json("Erro inesperado");
         }
     }
 }));

@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import cors from 'cors';
 import path from 'path';
 import { db } from './models/knex'
-
+import bodyParser from 'body-parser';
 import { ACCOUNT, CATEGORY, TProductDB } from './types/types';
 
 
@@ -13,9 +13,7 @@ const PORT = 3036
 const port = process.env.PORT
 app.use(cors())
 app.use(express.json())
-app.use(express.static(path.resolve(__dirname, "..", "/public/")))
-
-
+app.use(bodyParser.json());
 //endpoints para users 
 
 app.get("/users/:id", async (req: Request, res: Response) => {
@@ -24,15 +22,15 @@ app.get("/users/:id", async (req: Request, res: Response) => {
     try {
         if (!id || id === "") {
             const result = await db.raw(`SELECT * FROM users`)
-            res.send({ result })
+            res.json({ result })
         }
         else if (id === "" || id === undefined) {
-            res.status(404).send("author não encontrado")
+            res.status(404).json("author não encontrado")
         }
         else {
 
             const result = await db.raw(`SELECT * FROM users WHERE id="${id}"`)
-            res.status(200).send({ result })
+            res.status(200).json({ result })
         }
     } catch (error) {
         console.log(error)
@@ -42,9 +40,9 @@ app.get("/users/:id", async (req: Request, res: Response) => {
         }
 
         if (error instanceof Error) {
-            res.send(error.message)
+            res.json(error.message)
         } else {
-            res.send("Erro inesperado")
+            res.json("Erro inesperado")
         }
     }
 }
@@ -58,13 +56,13 @@ app.get("/users/search", async (req: Request, res: Response) => {
         if (q === undefined) {
 
             const result = await db("users")
-            res.status(200).send({ result })
+            res.status(200).json({ result })
 
         }
 
         else {
             const result = await db("users").where("name", "LIKES", `%${q}%`)
-            res.status(200).send({ result })
+            res.status(200).json({ result })
         }
 
     } catch (error) {
@@ -75,9 +73,9 @@ app.get("/users/search", async (req: Request, res: Response) => {
         }
 
         if (error instanceof Error) {
-            res.send(error.message)
+            res.json(error.message)
         } else {
-            res.send("Erro inesperado")
+            res.json("Erro inesperado")
         }
     }
 })
@@ -94,23 +92,23 @@ app.post("/users/create", async (req: Request, res: Response) => {
 
 
         if (typeof id !== typeof "string") {
-            res.status(400).send({ message: 'nome invalido' })
+            res.status(400).json({ message: 'nome invalido' })
         }
 
         if (typeof name != "string") {
-            res.status(400).send({ message: 'nome invalido' })
+            res.status(400).json({ message: 'nome invalido' })
         }
         if (typeof nickname != "string") {
-            res.status(400).send('nickname alfa-numerico')
+            res.status(400).json('nickname alfa-numerico')
         }
         if (typeof email != "string") {
-            res.status(400).send('nickname alfa-numerico')
+            res.status(400).json('nickname alfa-numerico')
         }
         if (typeof password != "string") {
-            res.status(400).send("outra senha essa é invalida tente alfa-numerico")
+            res.status(400).json("outra senha essa é invalida tente alfa-numerico")
         }
         if (typeof role != "string") {
-            res.status(400).send('nickname alfa-numerico')
+            res.status(400).json('nickname alfa-numerico')
         }
 
         const newAuthor: { id: string, name: string, nickname: string, email: string, password: string, role: string } = {
@@ -122,7 +120,7 @@ app.post("/users/create", async (req: Request, res: Response) => {
             role
         }
         await db("users").insert(newAuthor)
-        res.status(200).send("cadastro com sucesso")
+        res.status(200).json("cadastro com sucesso")
     } catch (error) {
         console.log(error)
 
@@ -131,9 +129,9 @@ app.post("/users/create", async (req: Request, res: Response) => {
         }
 
         if (error instanceof Error) {
-            res.send(error.message)
+            res.json(error.message)
         } else {
-            res.send("Erro inesperado")
+            res.json("Erro inesperado")
         }
     }
 })
@@ -147,7 +145,7 @@ app.delete("/users/:id", async (req: Request, res: Response) => {
             throw new Error("usuario  nao encontrado")
         }
         await db("users").delete().where({ id: idToDelete })
-        res.status(200).send({ message: 'users deletado com sucesso' })
+        res.status(200).json({ message: 'users deletado com sucesso' })
     }
     catch (error) {
         console.log(error)
@@ -157,9 +155,9 @@ app.delete("/users/:id", async (req: Request, res: Response) => {
         }
 
         if (error instanceof Error) {
-            res.send(error.message)
+            res.json(error.message)
         } else {
-            res.send("Erro inesperado")
+            res.json("Erro inesperado")
         }
     }
 })
@@ -203,7 +201,7 @@ app.put("/products/:id", async (req: Request, res: Response) => {
                 product4edit.price = newPrice || product4edit.price
         }
                 await db("products").update(product4edit).where({id :`${newid}`})
-                res.status(201).send("produto atualizado com sucesso")
+                res.status(201).json("produto atualizado com sucesso")
             } catch (error) {
                 console.log(error)
         
@@ -212,9 +210,9 @@ app.put("/products/:id", async (req: Request, res: Response) => {
                 }
         
                 if (error instanceof Error) {
-                    res.send(error.message)
+                    res.json(error.message)
                 } else {
-                    res.send("Erro inesperado")
+                    res.json("Erro inesperado")
                 }
             }
         }
@@ -231,16 +229,16 @@ app.post("/products/create", async (req: Request, res: Response) => {
         
     
         if (typeof name != typeof "string") {
-            res.status(400).send({ message: 'nome do produto é invalido' })
+            res.status(400).json({ message: 'nome do produto é invalido' })
         }
         if (typeof description != typeof "string") {
-            res.status(400).send('description deve ser categoria de produto valida')
+            res.status(400).json('description deve ser categoria de produto valida')
         }
         if (typeof image_url != typeof "string") {
-            res.status(400).send('url da imagem deve ser valida')
+            res.status(400).json('url da imagem deve ser valida')
         }
         if (typeof price == undefined) {
-            res.status(400).send("price deve ser numerico")
+            res.status(400).json("price deve ser numerico")
         }
 
 
@@ -253,7 +251,7 @@ app.post("/products/create", async (req: Request, res: Response) => {
         }
             await db("products").insert(newAccount)
     
-        res.status(201).send("produto cadastrado com sucesso")
+        res.status(201).json("produto cadastrado com sucesso")
     } catch (error) {
         console.log(error)
 
@@ -262,9 +260,9 @@ app.post("/products/create", async (req: Request, res: Response) => {
         }
 
         if (error instanceof Error) {
-            res.send(error.message)
+            res.json(error.message)
         } else {
-            res.send("Erro inesperado")
+            res.json("Erro inesperado")
         }
     }
 })
@@ -277,14 +275,14 @@ app.get("/products", async (req: Request, res: Response) => {
         if(searchTerm === undefined){
         const message = "LISTA DE PRODUTOS CADASTRADO DO SISTEMA"
         const result = await db("products")
-        res.status(200).send({ result})
+        res.status(200).json({ result})
     }else{
     
        const [result] =await db("products").where("name", "LIKE" , `%${searchTerm}%`)
         if(![result]|| result == null){
-            res.send("PRODUTO NÃO CADASTRADO")     
+            res.json("PRODUTO NÃO CADASTRADO")     
         }else{
-        res.status(200).send({result : [result], message: "PRODUTO ENCONTRADO"})
+        res.status(200).json({result : [result], message: "PRODUTO ENCONTRADO"})
     }
 }}
     catch (error) {
@@ -295,9 +293,9 @@ app.get("/products", async (req: Request, res: Response) => {
         }
 
         if (error instanceof Error) {
-            res.send(error.message)
+            res.json(error.message)
         } else {
-            res.send("Erro inesperado")
+            res.json("Erro inesperado")
         }
     }
 });
@@ -309,11 +307,11 @@ app.get("/products/:id", async (req: Request, res: Response) => {
         const [result] = await db.raw(`SELECT * FROM products WHERE id="${id}"`)
 
         if (!result) {
-            res.status(200).send("produto  não encontrado")
+            res.status(200).json("produto  não encontrado")
         }
         else {
 
-            res.status(200).send({ product: result })
+            res.status(200).json({ product: result })
         }
     } catch (error) {
         console.log(error)
@@ -323,9 +321,9 @@ app.get("/products/:id", async (req: Request, res: Response) => {
         }
 
         if (error instanceof Error) {
-            res.send(error.message)
+            res.json(error.message)
         } else {
-            res.send("Erro inesperado")
+            res.json("Erro inesperado")
         }
     }
 }
@@ -336,7 +334,7 @@ app.get("/purchases/:id", async (req: Request, res: Response) => {
     const idSearched = req.params.id as string | undefined
     try {
         if(idSearched=== undefined){
-            res.status(200).send("É NECESSARIO INFORMAR ID DE PAGAMENTO")
+            res.status(200).json("É NECESSARIO INFORMAR ID DE PAGAMENTO")
         }
         else{
          const result = await db.raw(`
@@ -352,7 +350,7 @@ app.get("/purchases/:id", async (req: Request, res: Response) => {
         INNER JOIN products ON products_purchases.product_id = products.id
         WHERE purchase_id="${idSearched}"`
         )
-         res.status(200).send({ purchase: result});
+         res.status(200).json({ purchase: result});
         }
 
     } catch (error) {
@@ -363,9 +361,9 @@ app.get("/purchases/:id", async (req: Request, res: Response) => {
         }
 
         if (error instanceof Error) {
-            res.send(error.message)
+            res.json(error.message)
         } else {
-            res.send("Erro inesperado")
+            res.json("Erro inesperado")
         }
     }
 });
@@ -452,9 +450,9 @@ app.post("/purchases/create", async (req: Request, res: Response) => {
             }
     
             if (error instanceof Error) {
-                res.send(error.message)
+                res.json(error.message)
             } else {
-                res.send("Erro inesperado")
+                res.json("Erro inesperado")
             }
         }
     });*/
