@@ -4,20 +4,26 @@ import { Request, Response } from 'express';
 import cors from 'cors';
 import path from 'path';
 import { db } from './models/knex'
-
+import { pets } from './dataTS/dataPETs'
+import { PET_SIZE, TPet } from './types/types'
 import { ACCOUNT, CATEGORY, TProductDB } from './types/types';
 
 
 const app = express()
 
-const PORT = 3036
+const PORT = 3003
 const port = process.env.PORT
 app.use(cors())
 app.use(express.json())
-app.use(express.static(path.resolve(__dirname, "..", "/public/")))
+app.use(express.static(path.resolve(__dirname, "./../public/")))
+
+app.get('/', async(req:Request, res:Response)=>{
+    res.sendFile('/index.html')
+})
 
 
 //endpoints para users 
+/* 
 app.get("/users", async (req: Request, res: Response) => {
    try{
     const result = await db.raw(`SELECT * FROM users`)
@@ -36,8 +42,8 @@ app.get("/users", async (req: Request, res: Response) => {
         }
     }
 }
-)
-app.get("/users/:id", async (req: Request, res: Response) => {
+)*/
+app.get("/user/:id", async (req: Request, res: Response) => {
     const id = req.params.id
 
     try {
@@ -71,16 +77,24 @@ app.get("/users/:id", async (req: Request, res: Response) => {
 
 
 
-app.get("/users/search", async (req: Request, res: Response) => {
+app.get("/users", async (req: Request, res: Response) => {
    try {
    
-    const search = req.query.q as string | undefined
+    const searchName = req.query.q as string | undefined
      
-        if (search === undefined) {
-            const result ="Indique o nome a ser buscado"
-            res.status(200).send(result)
-        }
-
+        if (searchName === undefined) {
+            const message ="LISTA DE USUARIOS"
+            const result = await db("users")
+            
+            res.status(200).send(message).json(result)
+    }else
+    {  
+        const [result] =await db("users").where("name", "LIKE" , `%${searchName}%`)
+         if(!result|| result == null){
+             res.send("USUARIO NÃO CADASTRADO")     
+         }else{
+         res.status(200).send({searchName : [result], message: "USUARIO BUSCADO FOI ENCONTRADO"})}
+ }
     } catch (error) {
         console.log(error)
 
@@ -99,16 +113,16 @@ app.get("/users/search", async (req: Request, res: Response) => {
 app.post("/users/create", async (req: Request, res: Response) => {
 
     try {
-        const id = req.body.id
+        const cpfCNPJ = req.body.cpfCNPJ
         const name = req.body.name
         const nickname = req.body.nickname
         const email = req.body.email
         const password = req.body.password
-        const role = req.body.role
 
 
-        if (typeof id !== typeof "string") {
-            res.status(400).send({ message: 'nome invalido' })
+
+        if (typeof cpfCNPJ !== typeof "string") {
+            res.status(400).send({ message: '"cpf" ou "cnpj" deve ser documento valido' })
         }
 
         if (typeof name != "string") {
@@ -123,20 +137,18 @@ app.post("/users/create", async (req: Request, res: Response) => {
         if (typeof password != "string") {
             res.status(400).send("outra senha essa é invalida tente alfa-numerico")
         }
-        if (typeof role != "string") {
-            res.status(400).send('nickname alfa-numerico')
-        }
 
-        const newAuthor: { id: string, name: string, nickname: string, email: string, password: string, role: string } = {
-            id,
+
+        const newPerson: { cpfCNPJ: string, name: string, nickname: string, email: string, password: string } = {
+            cpfCNPJ,
             name,
             nickname,
             email,
             password,
-            role
+
         }
-        await db("users").insert(newAuthor)
-        res.status(200).send("cadastro com sucesso")
+        await db("users").insert(newPerson)
+        res.status(201).send({message: "novo usuario cadastrado com sucesso", newPerson})
     } catch (error) {
         console.log(error)
 
@@ -383,7 +395,7 @@ app.get("/purchases/:id", async (req: Request, res: Response) => {
         }
     }
 });
-
+/* 
 app.post("/purchases/create", async (req: Request, res: Response) => {
 
             try {
@@ -442,7 +454,12 @@ app.post("/purchases/create", async (req: Request, res: Response) => {
                 res.send("Erro inesperado")
             }
         }
-    })
-app.listen(3036, () => {
+    })*/
+
+    
+
+
+    
+    app.listen(3099, () => {
     console.log(`Servidor rodando na porta 3036s `)
 });

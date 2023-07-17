@@ -17,11 +17,14 @@ const cors_1 = __importDefault(require("cors"));
 const path_1 = __importDefault(require("path"));
 const knex_1 = require("./models/knex");
 const app = (0, express_1.default)();
-const PORT = 3036;
+const PORT = 3003;
 const port = process.env.PORT;
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
-app.use(express_1.default.static(path_1.default.resolve(__dirname, "..", "/public/")));
+app.use(express_1.default.static(path_1.default.resolve(__dirname, "./../public/")));
+app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.sendFile('/index.html');
+}));
 app.get("/users/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     try {
@@ -51,15 +54,21 @@ app.get("/users/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 }));
 app.get("/users", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const q = req.params.q;
     try {
-        if (q === undefined) {
+        const searchName = req.query.q;
+        if (searchName === undefined) {
+            const message = "LISTA DE USUARIOS";
             const result = yield (0, knex_1.db)("users");
-            res.status(200).send({ result });
+            res.status(200).send(message).json(result);
         }
         else {
-            const result = yield (0, knex_1.db)("users").where("name", "LIKES", `%${q}%`);
-            res.status(200).send({ result });
+            const [result] = yield (0, knex_1.db)("users").where("name", "LIKE", `%${searchName}%`);
+            if (!result || result == null) {
+                res.send("USUARIO NÃO CADASTRADO");
+            }
+            else {
+                res.status(200).send({ searchName: [result], message: "USUARIO BUSCADO FOI ENCONTRADO" });
+            }
         }
     }
     catch (error) {
@@ -82,7 +91,6 @@ app.post("/users/create", (req, res) => __awaiter(void 0, void 0, void 0, functi
         const nickname = req.body.nickname;
         const email = req.body.email;
         const password = req.body.password;
-        const role = req.body.role;
         if (typeof id !== typeof "string") {
             res.status(400).send({ message: 'nome invalido' });
         }
@@ -98,19 +106,15 @@ app.post("/users/create", (req, res) => __awaiter(void 0, void 0, void 0, functi
         if (typeof password != "string") {
             res.status(400).send("outra senha essa é invalida tente alfa-numerico");
         }
-        if (typeof role != "string") {
-            res.status(400).send('nickname alfa-numerico');
-        }
         const newAuthor = {
             id,
             name,
             nickname,
             email,
             password,
-            role
         };
         yield (0, knex_1.db)("users").insert(newAuthor);
-        res.status(200).send("cadastro com sucesso");
+        res.status(201).send({ message: "novo usuario cadastrado com sucesso", newAuthor });
     }
     catch (error) {
         console.log(error);
@@ -239,16 +243,16 @@ app.post("/products/create", (req, res) => __awaiter(void 0, void 0, void 0, fun
         }
     }
 }));
-app.get("/products", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get("/products/search", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const searchTerm = req.query.q;
-        if (searchTerm === undefined) {
+        const search = req.query.q;
+        if (search === undefined) {
             const message = "LISTA DE PRODUTOS CADASTRADO DO SISTEMA";
             const result = yield (0, knex_1.db)("products");
             res.status(200).send({ result });
         }
         else {
-            const [result] = yield (0, knex_1.db)("products").where("name", "LIKE", `%${searchTerm}%`);
+            const [result] = yield (0, knex_1.db)("products").where("name", "LIKE", `%${search}%`);
             if (![result] || result == null) {
                 res.send("PRODUTO NÃO CADASTRADO");
             }
@@ -301,7 +305,18 @@ app.get("/purchases/:id", (req, res) => __awaiter(void 0, void 0, void 0, functi
             res.status(200).send("É NECESSARIO INFORMAR ID DE PAGAMENTO");
         }
         else {
-            const result = yield knex_1.db.select(`*`).from(`purchases`).where("id", "LIKE", `${idSearched}`);
+            const result = yield knex_1.db.raw(`
+         SELECT
+        products.name,
+        products.price,
+        purchases.id,
+        purchases.quantity,
+        purchases.total_price,
+        purchases.buyer_id
+        FROM purchases
+        INNER JOIN products_purchases ON purchases.id = products_purchases.purchase_id
+        INNER JOIN products ON products_purchases.product_id = products.id
+        WHERE purchase_id="${idSearched}"`);
             res.status(200).send({ purchase: result });
         }
     }
@@ -318,7 +333,7 @@ app.get("/purchases/:id", (req, res) => __awaiter(void 0, void 0, void 0, functi
         }
     }
 }));
-app.listen(3036, () => {
+app.listen(3099, () => {
     console.log(`Servidor rodando na porta 3036s `);
 });
 //# sourceMappingURL=index.js.map

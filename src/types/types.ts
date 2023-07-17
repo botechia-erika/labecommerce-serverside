@@ -1,20 +1,14 @@
 import { db } from "../models/knex"
 
-export type TPerson = {
-    id: string,
-    name: string,
-    nickname: string,
-    email: string,
-    password: string,
-    role: CATEGORY.ADM | CATEGORY.INSTRUCTOR | CATEGORY.NORMAL | CATEGORY.BUYER | CATEGORY.AUTHOR
-}
+
 
 export enum CATEGORY {
     ADM = "ADM",
     INSTRUCTOR = "INSTRUCTOR",
-    NORMAL = "NORMAL",
+    NORMAL = "CADASTRADO",
     AUTHOR = "AUTHOR",
-    BUYER = "BUYER"
+    BUYER = "BUYER",
+    STUDENT = "STUDENT"
 }
 
 export enum ACCOUNT{
@@ -111,4 +105,16 @@ export type TProductsDB = {
     modelo: string
     ano: number
   }
-    
+
+  export enum PET_SIZE {
+	SMALL = "Pequeno porte",
+	MEDIUM = "Médio porte",
+	LARGE = "Grande porte"
+}
+
+export type TPet = {
+	id: string,
+	name: string,
+	age: number,
+	size: PET_SIZE
+}
