@@ -69,7 +69,7 @@ app.get("/user/:id", async (req: Request, res: Response) => {
                
         }
         else {
-            res.status(404).send("USER não encontrado")
+            res.status(404).send({message: "USER não encontrado"})
         }
     }
     } catch (error) {
@@ -92,7 +92,7 @@ app.get("/user/:id", async (req: Request, res: Response) => {
 
 
 
-app.post("/users/create", async (req: Request, res: Response) => {
+app.post("/user", async (req: Request, res: Response) => {
 
     try {
         const id = req.body.id
@@ -287,7 +287,7 @@ app.get("/products", async (req: Request, res: Response) => {
     
        const [result] =await db("products").where("name", "LIKE" , `%${searchTerm}%`)
         if(![result]|| result == null){
-            res.send("PRODUTO NÃO CADASTRADO")     
+            res.send({message: "PRODUTO NÃO ENCONTRADO"})     
         }else{
         res.status(200).send({result : [result], message: "PRODUTO ENCONTRADO"})
     }
@@ -307,14 +307,14 @@ app.get("/products", async (req: Request, res: Response) => {
     }
 });
 
-app.get("/products/:id", async (req: Request, res: Response) => {
+app.get("/product/:id", async (req: Request, res: Response) => {
     const id = req.params.id as string | []
 
     try {
         const [result] = await db.raw(`SELECT * FROM products WHERE id="${id}"`)
 
         if (!result) {
-            res.status(200).send("produto  não encontrado")
+            res.status(200).send({message: "PRODUTO  não encontrado"})
         }
         else {
 
