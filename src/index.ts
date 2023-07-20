@@ -53,22 +53,25 @@ app.get("/users", async (req: Request, res: Response) => {
 })
 
 
-app.get("/users/:id", async (req: Request, res: Response) => {
-    const id = req.params.id
+app.get("/user/:id", async (req: Request, res: Response) => {
+    const id = req.params.id as string | undefined
 
     try {
-        if (!id || id === "") {
-            const result = await db.raw(`SELECT * FROM users`)
-            res.send({ result })
+        if (id==="" || id === undefined) {
+     
+            res.send({ message: "ID DE USUARIO DEVE SER INFORMADO PARA BUSCA" })
         }
-        else if (id === "" || id === undefined) {
-            res.status(404).send("USER não encontrado")
+        else{
+            const [result] = await db.raw(`SELECT * FROM users WHERE id="${id}"`)
+
+            if(result && result != undefined) { 
+                res.status(200).send({ message: "USUARIO ENCONTRADO" , result: result })
+               
         }
         else {
-
-            const result = await db.raw(`SELECT * FROM users WHERE id="${id}"`)
-            res.status(200).send({ result })
+            res.status(404).send("USER não encontrado")
         }
+    }
     } catch (error) {
         console.log(error)
 
@@ -102,16 +105,16 @@ app.post("/users/create", async (req: Request, res: Response) => {
             res.status(400).send({ message: 'id deve ser cpf - cnpj validado' })
         }
 
-        if (typeof name != "string") {
+        if (typeof name !== "string") {
             res.status(400).send({ message: 'nome invalido' })
         }
-        if (typeof nickname != "string") {
+        if (typeof nickname !== "string") {
             res.status(400).send('nickname alfa-numerico')
         }
-        if (typeof email != "string") {
+        if (typeof email !== "string") {
             res.status(400).send('email invalido')
         }
-        if (typeof password != "string") {
+        if (typeof password !== "string") {
             res.status(400).send("outra senha essa é invalida tente alfa-numerico")
         }
 
@@ -124,7 +127,7 @@ app.post("/users/create", async (req: Request, res: Response) => {
             password
         }
         await db("users").insert(newAuthor)
-        res.status(200).send("usuario cadastrado com sucesso")
+        res.status(201).send({message: "usuario cadastrado com sucesso"})
     } catch (error) {
         console.log(error)
 
