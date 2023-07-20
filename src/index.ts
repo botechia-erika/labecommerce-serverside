@@ -18,6 +18,40 @@ app.use(express.static(path.resolve(__dirname, "..", "/public/")))
 
 
 //endpoints para users 
+app.get("/users", async (req: Request, res: Response) => {
+  
+
+    try {
+        const q = req.query.q as string | undefined      
+        if (q === undefined) {
+            const result = await db("users")
+            res.status(200).send({ result })
+        }else {
+            const [result] = await db("users").where("name", "LIKE", `%${q}%`)
+            if(result){
+                res.status(200).send({ message: "usuario encontrado no nosso sistema" , result })
+
+             
+            }else{
+                res.status(200).send({message: "usuario NÃO encontrado"})  
+             
+        }
+    }
+    } catch (error) {
+        console.log(error)
+
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send("Erro inesperado")
+        }
+    }
+})
+
 
 app.get("/users/:id", async (req: Request, res: Response) => {
     const id = req.params.id
@@ -28,7 +62,7 @@ app.get("/users/:id", async (req: Request, res: Response) => {
             res.send({ result })
         }
         else if (id === "" || id === undefined) {
-            res.status(404).send("author não encontrado")
+            res.status(404).send("USER não encontrado")
         }
         else {
 
@@ -53,35 +87,7 @@ app.get("/users/:id", async (req: Request, res: Response) => {
 
 
 
-app.get("/users/search", async (req: Request, res: Response) => {
-    const q = req.params.q
-    try {
-        if (q === undefined) {
 
-            const result = await db("users")
-            res.status(200).send({ result })
-
-        }
-
-        else {
-            const result = await db("users").where("name", "LIKES", `%${q}%`)
-            res.status(200).send({ result })
-        }
-
-    } catch (error) {
-        console.log(error)
-
-        if (req.statusCode === 200) {
-            res.status(500)
-        }
-
-        if (error instanceof Error) {
-            res.send(error.message)
-        } else {
-            res.send("Erro inesperado")
-        }
-    }
-})
 
 app.post("/users/create", async (req: Request, res: Response) => {
 
@@ -91,11 +97,9 @@ app.post("/users/create", async (req: Request, res: Response) => {
         const nickname = req.body.nickname
         const email = req.body.email
         const password = req.body.password
-        const role = req.body.role
-
 
         if (typeof id !== typeof "string") {
-            res.status(400).send({ message: 'nome invalido' })
+            res.status(400).send({ message: 'id deve ser cpf - cnpj validado' })
         }
 
         if (typeof name != "string") {
@@ -105,25 +109,22 @@ app.post("/users/create", async (req: Request, res: Response) => {
             res.status(400).send('nickname alfa-numerico')
         }
         if (typeof email != "string") {
-            res.status(400).send('nickname alfa-numerico')
+            res.status(400).send('email invalido')
         }
         if (typeof password != "string") {
             res.status(400).send("outra senha essa é invalida tente alfa-numerico")
         }
-        if (typeof role != "string") {
-            res.status(400).send('nickname alfa-numerico')
-        }
 
-        const newAuthor: { id: string, name: string, nickname: string, email: string, password: string, role: string } = {
+
+        const newAuthor: {id:string, name: string, nickname: string, email: string, password: string } = {
             id,
             name,
             nickname,
             email,
-            password,
-            role
+            password
         }
         await db("users").insert(newAuthor)
-        res.status(200).send("cadastro com sucesso")
+        res.status(200).send("usuario cadastrado com sucesso")
     } catch (error) {
         console.log(error)
 

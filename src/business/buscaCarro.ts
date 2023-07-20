@@ -29,7 +29,7 @@ tornar marca opcional com signo de interrogação
 */
 //console.log('*****FROTA COMPLETA SEM MARCA REFATORA MARCA? ********')
 //console.log(buscarCarrosPorMarca(frota))
-console.log(buscaCarro(Frota, query))
+console.log(buscaCarro(Frota, query:TCarro))
 //retorna frota completa
 
 
