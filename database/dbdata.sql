@@ -1,4 +1,5 @@
--- Active: 1689797302300@@127.0.0.1@3306
+-- SQLBook: Code
+-- Active: 1689929283542@@127.0.0.1@3306
 
 
 
@@ -187,3 +188,23 @@ FROM
     PRODUCTS_PURCHASES;
 
 DROP TABLE USERS_TASKS;
+
+CREATE TABLE classrooms(
+    id TEXT PRIMARY KEY UNIQUE NOT NULL,
+    name TEXT NOT NULL
+);
+
+CREATE TABLE students (
+    id TEXT PRIMARY KEY UNIQUE NOT NULL,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    classroom_id TEXT NOT NULL,
+    FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
+);
+
+-- selecionar buyer todos os pagamentos com id associado e lista de produtos
+
+SELECT * FROM purchases WHERE id = PG001
+JOIN products 
+ON products.id=product_id;
+

@@ -1,10 +1,8 @@
-import { TItemPurchased } from './types/types';
 import express from 'express'
 import { Request, Response } from 'express';
 import cors from 'cors';
 import path from 'path';
 import { db } from './models/knex'
-import { buscaProducto } from './business/buscaCarro';
 import { ACCOUNT, CATEGORY, TProductDB } from './types/types';
 
 
@@ -337,29 +335,13 @@ app.get("/product/:id", async (req: Request, res: Response) => {
 )
 
 // enpoints para purchases
-app.get("/purchases/:id", async (req: Request, res: Response) => {
-    const idSearched = req.params.id as string | undefined
+app.get("/purchases", async (req: Request, res: Response) => {
+   
     try {
-        if(idSearched=== undefined){
-            res.status(200).send("É NECESSARIO INFORMAR ID DE PAGAMENTO")
-        }
-        else{
-         const result = await db.raw(`
-         SELECT
-        products.name,
-        products.price,
-        purchases.id,
-        purchases.quantity,
-        purchases.total_price,
-        purchases.buyer_id
-        FROM purchases
-        INNER JOIN products_purchases ON purchases.id = products_purchases.purchase_id
-        INNER JOIN products ON products_purchases.product_id = products.id
-        WHERE purchase_id="${idSearched}"`
-        )
-         res.status(200).send({ purchase: result});
-        }
-
+        const result = await db.raw(`select * from purchases`)
+            res.status(200).send({message: "lista de pagamentos", result}
+            )
+   
     } catch (error) {
         console.log(error)
 
@@ -374,82 +356,75 @@ app.get("/purchases/:id", async (req: Request, res: Response) => {
         }
     }
 });
-/* 
-app.post("/purchases/create", async (req: Request, res: Response) => {
+   
+app.get("/purchases/:id", async (req: Request, res: Response) => {
+  
+    try {
+        const id = req.params.id 
+        const result = await db.raw(`
+         SELECT
+        products.name,
+        products.price,
+        purchases.id,
+        purchases.quantity,
+        purchases.total_price,
+        purchases.buyer_id
+        FROM purchases
+        INNER JOIN products_purchases ON purchases.id = products_purchases.purchase_id
+        INNER JOIN products ON products_purchases.product_id = products.id
+        WHERE purchase_id="${id}"`
+        )
+         res.status(200).json({ message: `RESULTADO PARA PAGAMENTO IDENTIFICADO ${id}`, result: result});
+    
+    }catch (error) {
+        console.log(error)
+
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send("Erro inesperado")
+        }
+    }
+})
+
+app.post("/purchases", async (req: Request, res: Response) => {
 
             try {
-                let idPayment: undefined | string
-                const id=req.body.itemCart.id as string;
-                const totalPrice=req.body.itemCart.total as Number;
-                const quantityItem = req.body.itemCart.quantity as Number;
-                const buyer = req.body.buyer as string| undefined
-                if(id != typeof "string"){
-                  throw new Error("id deve ser string valida")
-                }
+                const product_id=req.body.product_id 
+                const total_price=req.body.totalPrice 
+                const quantity = req.body.quantity 
+                const buyer_id = req.body.buyer_id 
+              
                       
-                if(typeof totalPrice != typeof Number){
+                if(typeof total_price !==   "number"){
                     throw new Error("preço total deve ser valor numerico valido")
                   }
             
                         
-                if(typeof quantityItem != typeof Number){
+                if(typeof buyer_id !== "string"){
                     throw new Error("quantidade de items deve ser valor numerico valida")
                   }
-      
 
-                if(buyer){
-                  const buyerDB = await db.raw(`SELECT id FROM users WHERE id="${buyer}"`)
-                 if(!buyerDB || buyerDB === undefined){
-                    throw new Error("cliente deve ser cadastrado antes da compra")
-                 }else{
-                    return buyer
-                 }
-                }
-      
-                            
-                if( idPayment === undefined) {
-                    const lastPg =  await db.raw(`SELECT id FROM purchases ORDER BY DESC LIMIT 1`)
-                    const newNro = Number(lastPg.pop(3)) + 1
-                    idPayment = "pgo" + newNro.toString() 
-                      return idPayment
-                }
-
-                const ItemPurchase =[{
-                idPayment,
-                id,
-                quantityItem,
-                totalPrice,
-                buyer
-                }]
-            
-
-                if(ItemPurchase.length === 1){
-                    await db("purchases").insert(ItemPurchase[0])
-                }else{
-                    [...ItemPurchase].forEach(product)=>{
-                            product.filter()
-                        await db.raw(`
-                    INSERT INTO purchases(
-                    id,
-                    product_id,
-                    quantity,
-                    total_price,
-                    buyer_id)
-                    values(
-                        ${['ItemPurchase[0].idPayment']},
-
-
-
-                        
-                        ${['ItemPurchased[0].buyer']}
-                        )
-
-                    `)
-                }
-
-
+                  if( typeof quantity !== "number"){
+                    throw new Error("quantidade de items deve ser valor numerico valida")
+                  }
                 
-            } catch (error) {
+                  const newId = `${Date.now()}`.toString()
+                  const newPurchase:{id:string, product_id:string, total_price:number, quantity:number , buyer_id:string }={
+                  id:newId,
+                product_id,
+                total_price,
+                 quantity,
+                buyer_id
+                  }
+                  await db("purchases").insert(newPurchase)
+
+                res.send(200).send({message: "cadastro realizado com sucesso"})
+                } catch (error) {
             console.log(error)
     
             if (req.statusCode === 200) {
@@ -461,8 +436,8 @@ app.post("/purchases/create", async (req: Request, res: Response) => {
             } else {
                 res.send("Erro inesperado")
             }
-        }
-    });*/
+            }
+    });
 app.listen(3036, () => {
     console.log(`Servidor rodando na porta 3036s `)
 });
