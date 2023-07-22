@@ -395,7 +395,7 @@ app.post("/purchases", async (req: Request, res: Response) => {
 
             try {
                 const product_id=req.body.product_id 
-                const total_price=req.body.totalPrice 
+                const total_price=req.body.total_price 
                 const quantity = req.body.quantity 
                 const buyer_id = req.body.buyer_id 
               
@@ -438,6 +438,35 @@ app.post("/purchases", async (req: Request, res: Response) => {
             }
             }
     });
+
+
+    app.delete("/purchases/:id", async (req: Request, res: Response) => {
+
+        try {
+            const id = req.params.id
+    
+            const [purchaseDelete] = await db("purchases").where({ id: id })
+            if (!purchaseDelete) {
+                throw new Error("purchase  nao encontrado")
+            }
+            await db("purchases").delete().where({ id: `${id}`})
+            res.status(200).send({ message: 'purchase deletado com sucesso' })
+        }
+        catch (error) {
+            console.log(error)
+    
+            if (req.statusCode === 200) {
+                res.status(500)
+            }
+    
+            if (error instanceof Error) {
+                res.send(error.message)
+            } else {
+                res.send("Erro inesperado")
+            }
+        }
+    })
+    
 app.listen(3036, () => {
     console.log(`Servidor rodando na porta 3036s `)
 });
