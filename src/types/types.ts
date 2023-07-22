@@ -18,9 +18,10 @@ export enum CATEGORY {
 }
 
 export enum ACCOUNT{
-    "PREMIUM-MENSAL" ,
-    "FULL-PREMIUM",
-    "FREE"
+    "MENSAL" ,
+    "ANUAL",
+    "PROMO",
+    "COMBO"
 }
 
 
@@ -73,7 +74,23 @@ type ADM = {
 }
 
 
+export type TItemPurchased = {
+    id: string,
+    productSearched: string,
+    name:string,
+    description: string, 
+    image_url: string,
+    price : Number  | string,
+    quantity: number,
+}
 
+
+export type TProductsDB = {
+    product_id:string,
+    quantity:number,
+    priceUnity:number,
+    totalItem:number
+}
 
 /*const purchaseDBNumber = () => {
     return new Promise(async (resolve, reject) => {
@@ -93,6 +110,64 @@ type ADM = {
   export type TCarro ={
     marca: string
     modelo: string
-    ano: number
+    ano: number | string
   }
+
+  const teste = "true" && typeof true
+/*  type TNormalAccount = {
+    nickname: string,
+    permission: false
+  }
+ */
+  type TAdminAccount = {
+    nickname: string,
+    permission: true
+  }
+
+
+  const userAdmin: TAdminAccount = {
+    nickname: "Muri",
+    permission: true
+ }
+
+/*   const  userNormal: TNormalAccount = {
+    nickname: "Yuri",
+    permission: false
+  } */
+
+
+  type TPerson = {
+    id: number|string;
+    name: string;
+    email: string,
+    password: string;
+    role: "Normal" | "Admin";
+}
+
+/* enum TPerson.role={
+
+} */
+
+/* 
+type adminAccount={
+    nickname: string,
+    permission: true
+}
+
+type userAdmin: TAdminAccount={
     
+}*/
+//esse ok
+const usuario :TPerson&TPerson={
+    id:"1",
+    name: "Matheus",
+    email: "matheus@gmail.com",
+    password: "123456",
+    role: "Normal"
+}
+
+type Person = number | string ;
+
+//valor "true" é typeof true se valor é "true" => admin true 
+
+
