@@ -1,0 +1,130 @@
+html {
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+:root {
+  font-size: 16px;
+  --bg-darkSVG:
+}
+
+body {
+  padding: 0.4rem;
+  min-height: 100vh;
+}
+
+/* Resets */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base Style */
+body {
+  color: white;
+  font-family: "Open Sans", sans-serif;
+  font-size: 1.5rem;
+}
+
+header {
+  display: flex;
+  flex-flow: row wrap;
+  padding: 1rem;
+  justify-content: space-around;
+  background: #6f35f1;
+  font-size: 1.4rem;
+}
+
+.brandLogo {
+  border-radius: 50px;
+}
+
+input {
+  font-size: 0.7rem;
+}
+
+.left-side {
+  BACKGROUND: ORANGERED;
+}
+
+main {
+  background: rebeccapurple;
+}
+
+.right-side {
+  background: greenyellow;
+}
+
+footer {
+  background-color: #251947;
+  border: 4px solid #6f35f1;
+}
+
+/* Mobile Styles */
+.parent {
+  display: grid;
+  grid-template-areas:
+    "head"
+    "left"
+    "main"
+    "right"
+    "foot";
+  min-height: 100vh;
+}
+
+.parent>header,
+footer {
+  display: flex;
+  align-items: center;
+}
+
+header {
+  grid-area: head;
+}
+
+.left-side {
+  grid-area: left;
+}
+
+main {
+  grid-area: main;
+}
+
+.right-side {
+  grid-area: right;
+}
+
+footer {
+  grid-area: foot;
+}
+
+/* Tablet styles */
+@media screen and (min-width: 500px) {
+  .parent {
+    grid-template-columns: 0.5fr 1fr;
+    grid-template-rows: 100px 1fr 1fr 100px;
+    grid-template-areas:
+      "head head"
+      "left main"
+      "right main"
+      "foot foot";
+  }
+}
+
+/* laptop and desktop styles */
+@media screen and (min-width: 960px) {
+  .parent {
+    grid-template-columns: 200px 1fr 200px;
+    grid-template-areas:
+      "head head head"
+      "left main right"
+      "left main right"
+      "foot foot foot";
+  }
+}

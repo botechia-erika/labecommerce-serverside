@@ -1,4 +1,4 @@
-import { db } from "./../models/knex"
+/*import { db } from "./../models/knex"
 import { TProductDB } from "./../types/types"
 export const buscaCompra=(['productPurchased']) =>{
    const listaProdutos = await db.raw(`select * from products`)
@@ -16,3 +16,4 @@ export const buscaCompra=(['productPurchased']) =>{
     )
   }
 
+*/

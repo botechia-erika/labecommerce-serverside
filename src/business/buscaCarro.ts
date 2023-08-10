@@ -1,19 +1,20 @@
 import {Frota} from "./../dataTS/frota"
-import { TCarro } from "../types/types"
+import { TCarro, TProductDB } from "../types/types"
 //frota e array de carros e marca string
-function buscaCarro(frota:TCarro[], marca?:string) {
-  if (marca === undefined) {
-    return frota
+export function buscaProducto(products:TProductDB[], id_product?:string) {
+
+  if (id_product === undefined) {
+    return "produto não informado"
   }
 else{
-  return frota.filter(
-    (Tcarro) => {
-      return Tcarro.marca === marca
+  return products.filter(
+    (product) => {
+      return product.id === id_product
     }
   )
 }
 }
-const query = process.argv[3]
+
 
 /*console.log('*******FIAT********')
 console.log(buscarCarrosPorMarca(frota, "Fiat"))
@@ -28,7 +29,7 @@ tornar marca opcional com signo de interrogação
 */
 //console.log('*****FROTA COMPLETA SEM MARCA REFATORA MARCA? ********')
 //console.log(buscarCarrosPorMarca(frota))
-console.log(buscaCarro(Frota, query))
+console.log(buscaCarro(Frota, query:TCarro))
 //retorna frota completa
 
 
