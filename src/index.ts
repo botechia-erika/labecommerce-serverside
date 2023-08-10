@@ -54,20 +54,21 @@ app.get("/users/:id", async (req: Request, res: Response) => {
 
 
 app.get("/users", async (req: Request, res: Response) => {
-    const q = req.params.q
     try {
-        if (q === undefined) {
+        const q = req.query.q as undefined | string
 
+        if (q === undefined) {
             const result = await db("users")
             res.status(200).send({ result })
+        } else {
 
+            const [result] = await db("users").where("name", "LIKE", `%${q}%`)
+            if (![result] || result == null) {
+                res.send("USUARIO NÃO CADASTRADO")
+            } else {
+                res.status(200).send({ result: [result], message: "USUARIO ENCONTRADO" })
+            }
         }
-
-        else {
-            const result = await db("users").where("name", "LIKES", `%${q}%`)
-            res.status(200).send({ result })
-        }
-
     } catch (error) {
         console.log(error)
 
@@ -200,25 +201,25 @@ app.put("/products/:id", async (req: Request, res: Response) => {
             product4edit.id = newid,
                 product4edit.name = newName || product4edit.name,
                 product4edit.description = newDescription || product4edit.description,
-            product4edit.image_url= newImageUrl || product4edit.image_url,
+                product4edit.image_url = newImageUrl || product4edit.image_url,
                 product4edit.price = newPrice || product4edit.price
         }
-                await db("products").update(product4edit).where({id :`${newid}`})
-                res.status(201).send("produto atualizado com sucesso")
-            } catch (error) {
-                console.log(error)
-        
-                if (req.statusCode === 200) {
-                    res.status(500)
-                }
-        
-                if (error instanceof Error) {
-                    res.send(error.message)
-                } else {
-                    res.send("Erro inesperado")
-                }
-            }
+        await db("products").update(product4edit).where({ id: `${newid}` })
+        res.status(201).send("produto atualizado com sucesso")
+    } catch (error) {
+        console.log(error)
+
+        if (req.statusCode === 200) {
+            res.status(500)
         }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send("Erro inesperado")
+        }
+    }
+}
 )
 
 app.post("/products/create", async (req: Request, res: Response) => {
@@ -228,9 +229,9 @@ app.post("/products/create", async (req: Request, res: Response) => {
         const name = req.body.name
         const description = req.body.description
         const image_url = req.body.image_url
-        const price = req.body.price 
-        
-    
+        const price = req.body.price
+
+
         if (typeof name != typeof "string") {
             res.status(400).send({ message: 'nome do produto é invalido' })
         }
@@ -245,15 +246,15 @@ app.post("/products/create", async (req: Request, res: Response) => {
         }
 
 
-        const newAccount:TProductDB= {
+        const newAccount: TProductDB = {
             id,
             name,
             description,
             image_url,
             price
         }
-            await db("products").insert(newAccount)
-    
+        await db("products").insert(newAccount)
+
         res.status(201).send("produto cadastrado com sucesso")
     } catch (error) {
         console.log(error)
@@ -274,20 +275,21 @@ app.post("/products/create", async (req: Request, res: Response) => {
 
 app.get("/products", async (req: Request, res: Response) => {
     try {
-       const searchTerm = req.query.q as string | undefined
-        if(searchTerm === undefined){
-        const message = "LISTA DE PRODUTOS CADASTRADO DO SISTEMA"
-        const result = await db("products")
-        res.status(200).send({ result})
-    }else{
-    
-       const [result] =await db("products").where("name", "LIKE" , `%${searchTerm}%`)
-        if(![result]|| result == null){
-            res.send("PRODUTO NÃO CADASTRADO")     
-        }else{
-        res.status(200).send({result : [result], message: "PRODUTO ENCONTRADO"})
+        const searchTerm = req.query.q as string | undefined
+        if (searchTerm === undefined) {
+            const message = "LISTA DE PRODUTOS CADASTRADO DO SISTEMA"
+            const result = await db("products")
+            res.status(200).send({ result })
+        } else {
+
+            const [result] = await db("products").where("name", "LIKE", `%${searchTerm}%`)
+            if (![result] || result == null) {
+                res.send("PRODUTO NÃO CADASTRADO")
+            } else {
+                res.status(200).send({ result: [result], message: "PRODUTO ENCONTRADO" })
+            }
+        }
     }
-}}
     catch (error) {
         console.log(error)
 
@@ -336,12 +338,12 @@ app.get("/products/:id", async (req: Request, res: Response) => {
 app.get("/purchases/:id", async (req: Request, res: Response) => {
     const idSearched = req.params.id as string | undefined
     try {
-        if(idSearched=== undefined){
+        if (idSearched === undefined) {
             res.status(200).send("É NECESSARIO INFORMAR ID DE PAGAMENTO")
         }
-        else{
-         const result = await db.select(`*`).from(`purchases`).where("id" , "LIKE", `${idSearched}`)
-         res.status(200).send({ purchase: result});
+        else {
+            const result = await db.select(`*`).from(`purchases`).where("id", "LIKE", `${idSearched}`)
+            res.status(200).send({ purchase: result });
         }
 
     } catch (error) {
