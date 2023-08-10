@@ -1,4 +1,3 @@
-import { buscaCompra } from './business/buscaCompra';
 import express from 'express'
 import { Request, Response } from 'express';
 import cors from 'cors';
@@ -25,7 +24,7 @@ app.get("/users/:id", async (req: Request, res: Response) => {
     try {
         if (!id || id === "") {
             const result = await db.raw(`SELECT * FROM users`)
-            res.send({ result })
+            res.json({ result })
         }
         else if (id === "" || id === undefined) {
             res.status(404).send("author não encontrado")
@@ -33,7 +32,7 @@ app.get("/users/:id", async (req: Request, res: Response) => {
         else {
 
             const result = await db.raw(`SELECT * FROM users WHERE id="${id}"`)
-            res.status(200).send({ result })
+            res.status(200).json({ result })
         }
     } catch (error) {
         console.log(error)

@@ -27,14 +27,14 @@ app.get("/users/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* 
     try {
         if (!id || id === "") {
             const result = yield knex_1.db.raw(`SELECT * FROM users`);
-            res.send({ result });
+            res.json({ result });
         }
         else if (id === "" || id === undefined) {
             res.status(404).send("author não encontrado");
         }
         else {
             const result = yield knex_1.db.raw(`SELECT * FROM users WHERE id="${id}"`);
-            res.status(200).send({ result });
+            res.status(200).json({ result });
         }
     }
     catch (error) {
@@ -51,15 +51,20 @@ app.get("/users/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 }));
 app.get("/users", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const q = req.params.q;
     try {
+        const q = req.query.q;
         if (q === undefined) {
             const result = yield (0, knex_1.db)("users");
             res.status(200).send({ result });
         }
         else {
-            const result = yield (0, knex_1.db)("users").where("name", "LIKES", `%${q}%`);
-            res.status(200).send({ result });
+            const [result] = yield (0, knex_1.db)("users").where("name", "LIKE", `%${q}%`);
+            if (![result] || result == null) {
+                res.send("USUARIO NÃO CADASTRADO");
+            }
+            else {
+                res.status(200).send({ result: [result], message: "USUARIO ENCONTRADO" });
+            }
         }
     }
     catch (error) {
