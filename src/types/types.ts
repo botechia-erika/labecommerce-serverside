@@ -1,20 +1,43 @@
 import { db } from "../models/knex"
 
+// aula typescript 2 
+// criar sistema de cadastro que contenha
+
+// 1l type alias para uma pessoa cadastrada de role normal com propiedades id, name, email, password, role => foi agregado nickname para fluidez da api futura quanto a rutas parametrizadas com endpoint equivalente a username para conta de perfil publico
+
+// type aliases para 2 tipos de conta (AdminAccount , NormalAccount ) com propiedades account e permission - foram agregados os seguintes types para accountType
+
 export type TPerson = {
     id: string,
     name: string,
     nickname: string,
     email: string,
     password: string,
-    role: CATEGORY.ADM | CATEGORY.INSTRUCTOR | CATEGORY.NORMAL | CATEGORY.BUYER | CATEGORY.AUTHOR
+    role: CATEGORY.NORMAL|"CADASTRADO"
+}
+const usuario:TPerson = {
+    id: "u001",
+    name: "Matheus Silva",
+    nickname: "@matheuzinho-silva",
+    email: "matheus@email.com",
+    password: "abc123456A1!",
+    role: "CADASTRADO"
+}
+export enum CATEGORY {
+    ADMIN = "ADM",
+    INSTRUCTOR = "INSTRUCTOR",
+    NORMAL = "CADASTRADO",
+    AUTHOR = "AUTHOR",
+    BUYER = "BUYER",
+    STUDENT = "STUDENT"
 }
 
-export enum CATEGORY {
-    ADM = "ADM",
-    INSTRUCTOR = "INSTRUCTOR",
-    NORMAL = "NORMAL",
-    AUTHOR = "AUTHOR",
-    BUYER = "BUYER"
+
+export enum ACCOUNTS{
+    "NORMAL"=1,
+    "ADMIN"=2,
+    "ACADEMIC"=3,
+    "BUYERS"=4
 }
 
 export enum ACCOUNT{
@@ -96,3 +119,21 @@ type ADM = {
     ano: number
   }
     
+
+type AdminAccount = {
+    nickname: "green",
+    key: 2
+}
+
+type AcademicAccount = {
+    nickname: "orange",
+    key:3
+}
+type BuyerAccount = {
+    nickname: "gold",
+    key:4
+}
+type NormalAccount = {
+    nickname: "blue",
+    key: 1
+}

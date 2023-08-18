@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const frota_1 = require("./../dataTS/frota");
+const frota_1 = require("../dataTS/frota");
 function buscaCarro(frota, marca) {
     if (marca === undefined) {
         return frota;
@@ -11,7 +11,6 @@ function buscaCarro(frota, marca) {
         });
     }
 }
-const query = process.argv[3];
-console.log(buscaCarro(frota_1.Frota, query));
+console.log(buscaCarro(frota_1.Frota));
 exports.default = buscaCarro;
 //# sourceMappingURL=buscaCarro.js.map
